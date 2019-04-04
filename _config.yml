@@ -1,5 +1,6 @@
-title: Hacker theme
-description: Hacker is a theme for GitHub Pages.
-show_downloads: true
-google_analytics:
+title: iwantmore.pizza
+description: phra's blog ~ Technical posts about InfoSec
+show_downloads: false
+show_repo: false
+google_analytics: UA-137780737-1
 theme: jekyll-theme-hacker
