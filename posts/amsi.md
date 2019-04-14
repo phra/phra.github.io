@@ -81,7 +81,7 @@ It's important to note that all the known bypasses are based on the fact that th
 There are some interesting tools that can help us to create (minimally) obfuscated samples starting from a detected `.ps1` script:
 
 1. [PSAmsi](https://github.com/cobbr/PSAmsi): it can detect the exact signatures and generated a minimally obfuscated script that will evade AMSI. You need to run in on a test machine because it will trigger a lot of AV alerts. Check out Ryan Cobb's [DerbyCon talk](https://www.youtube.com/watch?v=rEFyalXfQWk). [13] [14]
-1. [Invoke-Obfuscation](https://github.com/danielbohannon/Invoke-Obfuscation): a general purpose PowerShell obfuscator that can apply a few different techniques and produce unique, obfuscated samples. Check out Daniel Bohannon [Hacktivity talk](https://www.youtube.com/watch?v=uE8IAxM_BhE). [18] [19]
+1. [Invoke-Obfuscation](https://github.com/danielbohannon/Invoke-Obfuscation): a general purpose PowerShell obfuscator that can apply a few different techniques and produce unique, obfuscated samples. Check out Daniel Bohannon's [Hacktivity talk](https://www.youtube.com/watch?v=uE8IAxM_BhE). [18] [19]
 
 ### PowerShell Downgrade Attack
 
