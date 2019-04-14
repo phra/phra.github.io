@@ -6,14 +6,14 @@ _**Apr 15, 2019**_
 
 ## Antimalware Scan Interface (AMSI) — A Red Team Analysis on Evasion
 
-In this post we will analyze how AMSI works and recap existing known bypasses.
+In this post, we will analyze how AMSI works and recap existing known bypasses.
 
 ## Overview
 
-The Antimalware Scan Interface (AMSI) is a Microsoft Windows protection system built to defend the computer from attacks performed via scripted languages, such as PowerShell, VBScript, JavaScript, _et cetera_. [1]
+The Antimalware Scan Interface (AMSI) is a Microsoft Windows protection system built to defend the computer from attacks performed via scripting languages, such as PowerShell, VBScript, JavaScript, _et cetera_. [1]
 
 It works by analyzing scripts before the execution, in order to determine if the script is malicious or not.
-Moreover, it's designed to detect obfuscated malware by being called recursevely on every evalutation step.
+Moreover, it's designed to detect obfuscated malware by being called recursively on every evaluation step.
 If we think about a typical obfuscated script, they decode and decompress themselves in memory till the final payload is ready to be executed.
 
 ## Internals
@@ -23,7 +23,7 @@ In this way, simple techniques to avoid an initial, static screening are not eff
 The function responsible to decide if the script is allowed to run or not is called `AmsiScanBuffer`. [2]
 
 For example, PowerShell will call this function every time is about to evaluate any PowerShell scripts.
-The `AmsiScanBuffer` function comes from `amsi.dll`, loaded in the memory process along all the other userspace libraries.
+The `AmsiScanBuffer` function comes from `amsi.dll`, loaded in the memory process along with all the other userspace libraries.
 In fact, `amsi.dll` itself it's a userspace library and this has the consequence of being exposed to a number of attacks.
 
 ![AMSI Design](../assets/images/amsi-design.png "AMSI Design")
@@ -64,7 +64,7 @@ The code is pretty descriptive itself and we can already notice some important d
 
 1. if the `amsiInitFailed` field is set, `AMSI_RESULT_NOT_DETECTED` is returned to indicate that the sample is not considered malicious.
 
-1. otherwise the function continues with its detection logic and calls `AmsiScanBuffer`.
+1. otherwise, the function continues with its detection logic and calls `AmsiScanBuffer`.
 
 ## Bypassing AMSI
 
@@ -80,8 +80,8 @@ It's important to note that all the known bypasses are based on the fact that th
 
 There are some interesting tools that can help us to create (minimally) obfuscated samples starting from a detected `.ps1` script:
 
-1. [PSAmsi](https://github.com/cobbr/PSAmsi): it can detected the exact signatures and generated a minimally obfuscated script that will evade AMSI. You need to run in on a test machine because it will trigger a lot of AV alerts. Check out Ryan Cobb's [DerbyCon talk](https://www.youtube.com/watch?v=rEFyalXfQWk). [13] [14]
-1. [Invoke-Obfuscation](https://github.com/danielbohannon/Invoke-Obfuscation): a general purpose PowerShell obfuscator that can apply few different techniques and produce unique, obfuscated samples. Check out Daniel Bohannon [Hacktivity talk](https://www.youtube.com/watch?v=uE8IAxM_BhE). [18] [19]
+1. [PSAmsi](https://github.com/cobbr/PSAmsi): it can detect the exact signatures and generated a minimally obfuscated script that will evade AMSI. You need to run in on a test machine because it will trigger a lot of AV alerts. Check out Ryan Cobb's [DerbyCon talk](https://www.youtube.com/watch?v=rEFyalXfQWk). [13] [14]
+1. [Invoke-Obfuscation](https://github.com/danielbohannon/Invoke-Obfuscation): a general purpose PowerShell obfuscator that can apply a few different techniques and produce unique, obfuscated samples. Check out Daniel Bohannon [Hacktivity talk](https://www.youtube.com/watch?v=uE8IAxM_BhE). [18] [19]
 
 ### PowerShell Downgrade Attack
 
@@ -186,7 +186,7 @@ Be aware that using `Add-Type` to compile on the fly `C#` in PowerShell code wil
 [Bypass.AMSI]::Disable()
 ```
 
-For more information you can refer to [Out-CompressedDll.ps1](https://github.com/PowerShellMafia/PowerSploit/blob/dev/ScriptModification/Out-CompressedDll.ps1) by [PowerSploit](https://github.com/PowerShellMafia/PowerSploit).
+For more information, you can refer to [Out-CompressedDll.ps1](https://github.com/PowerShellMafia/PowerSploit/blob/dev/ScriptModification/Out-CompressedDll.ps1) by [PowerSploit](https://github.com/PowerShellMafia/PowerSploit).
 
 ### Hooking .NET Framework via CLR
 
@@ -259,7 +259,7 @@ If($GPF){
 
 It works by doing two things:
 
-1. disable global logging of scripts: if Domain Admins enable global logging of scripts, every script will be recorded on disk. To disable it we just overwrite the in memory representation of the Group Policy Settings.
+1. disable global logging of scripts: if Domain Admins enable global logging of scripts, every script will be recorded on the disk. To disable it we just overwrite the in-memory representation of the Group Policy Settings.
 2. replace the dictionary of known signatures with an empty one: some signatures always trigger a log action, even if the Script Block Logging mechanism is not enabled via Group Policy (_sic!_). In order to disable it, we replace this dictionary of known signatures with an empty one, always in our memory space.
 
 
