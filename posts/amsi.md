@@ -309,7 +309,7 @@ meterpreter > powershell_execute "'amsiutils'"
 ERROR:
 ```
 
-but if we import [Invoke-Bypass](https://github.com/d0nkeys/redteam/blob/master/code-execution/Invoke-Bypass.ps1) and execute the bypasses, we are then allowed to run ay kind of command, including, for example, [Invoke-Mimikatz](https://github.com/d0nkeys/redteam/blob/master/credentials/Invoke-Mimikatz.ps1).
+but if we import [Invoke-Bypass](https://github.com/d0nkeys/redteam/blob/master/code-execution/Invoke-Bypass.ps1) and execute the bypasses, we are then allowed to run any kind of command, including, for example, [Invoke-Mimikatz](https://github.com/d0nkeys/redteam/blob/master/credentials/Invoke-Mimikatz.ps1).
 
 ```
 meterpreter > powershell_import Invoke-Bypass.ps1
