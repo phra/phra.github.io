@@ -122,6 +122,6 @@ Contributions are not only welcome, but encouraged! Feel free to mess with the c
 
 ### Bonus: CircleCI integration
 
-Are you interested in integrating a CI pipeline in a Rust project? I wrote a generic [CircleCI configuration](https://github.com/phra/rustbuster/blob/master/.circleci/config.yml) for Rust projects that you can reuse with yours. See in action [here](https://circleci.com/gh/phra/workflows/rustbuster/tree/master).
+Are you interested in integrating a CI pipeline in a Rust project? I wrote a generic [CircleCI configuration](https://github.com/phra/rustbuster/blob/master/.circleci/config.yml) for Rust projects that you can reuse with yours. See it in action [here](https://circleci.com/gh/phra/workflows/rustbuster/tree/master).
 
 [back](../)
