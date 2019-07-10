@@ -2,11 +2,11 @@
 layout: default
 ---
 
-_**Jul 9, 2019**_
+_**Jul 11, 2019**_
 
 # Introducing Rustbuster — A Comprehensive Web Fuzzer and Content Discovery Tool
 
-I decided to learn [The Rust Programming Language](https://doc.rust-lang.org/book/) and I ended up writing a _yet another web fuzzer and content discovery tool™_, but comprehensive of the main features from [DirBuster](https://sourceforge.net/projects/dirbuster/), [Gobuster](https://github.com/OJ/gobuster), [wfuzz](https://github.com/xmendez/wfuzz), [Patator's http_fuzz](https://github.com/lanjelot/patator) and [IIS Short Name Scanner](https://github.com/irsdl/IIS-ShortName-Scanner).
+I decided to learn [The Rust Programming Language](https://doc.rust-lang.org/book/) and I ended up writing [Rustbuster](https://github.com/phra/rustbuster), _yet another web fuzzer and content discovery tool™_, but comprehensive of the main features from [DirBuster](https://sourceforge.net/projects/dirbuster/), [Gobuster](https://github.com/OJ/gobuster), [wfuzz](https://github.com/xmendez/wfuzz), [Patator's http_fuzz](https://github.com/lanjelot/patator) and [IIS Short Name Scanner](https://github.com/irsdl/IIS-ShortName-Scanner).
 
 ## Motivation
 
@@ -14,35 +14,52 @@ Rust is an amazing systems programming language. It features powerful and innova
 
 The best aspects are:
 
-- **it's compiled**: its toolchain is based on [LLVM](https://llvm.org/)
-- **it's strong typed**: everything is strongly typed, providing by default a powerful linter and autocompletion tool.
+- **it's compiled**: its [toolchain](https://github.com/rust-lang/rustc-guide) is based on [LLVM](https://llvm.org/)
+- **it's strong typed**: everything is [strongly typed](https://doc.rust-lang.org/book/ch03-02-data-types.html), providing by default a powerful [linter](https://github.com/rust-lang/rust-clippy) and [autocompletion](https://github.com/racer-rust/racer) tool
 - **it's very fast**: check [some benchmarks](https://benchmarksgame-team.pages.debian.net/benchmarksgame/fastest/rust-go.html) versus [Go](https://golang.org/)
-- **it has no runtime**: by design, Rust doesn't depends on any runtime
-- **it has no garbage collector**: the innovative [ownership concept](https://doc.rust-lang.org/book/ch04-01-what-is-ownership.html) let make it possible to have a programming language that doesn't force the developer to explicitly manage the memory while not not depending on a dedicated garbage collector
+- **it's safe**: [Rust is safe! ..or explicitly unsafe :)](https://doc.rust-lang.org/nomicon/meet-safe-and-unsafe.html)
+- **it has no runtime**: by design, Rust doesn't depends on any [runtime](https://github.com/rust-lang/rust/blob/master/src/libstd/rt.rs)
+- **it has no garbage collector**: the innovative [ownership concept](https://doc.rust-lang.org/book/ch04-01-what-is-ownership.html) makes possible to not depend on a garbage collector while not having the responsability of manually managing the memory allocations on the heap
 
-If you are interested in learning the language, check out [The Rust Programming Language book](https://doc.rust-lang.org/book/).
+If you are interested into learning the language, check out [The Rust Programming Language book](https://doc.rust-lang.org/book/).
+
+## Rustbuster
+
+Rustbuster was started as a Rust playground project with [@ps1dr3x](https://twitter.com/ps1dr3x) with the goal of reimplement a [DirBuster](https://sourceforge.net/projects/dirbuster/) equivalent. It ended up by becoming a collection of modules useful in different situation. Having a single executable suitable for most common web fuzzing tasks is very handy. At the time of writing, there are five modules available, that are: `dir`, `dns`, `vhost`, `fuzz` and `tilde`.
 
 ## Modules
 
-### `dir` — Directories and files enumeration mode
+Let's see each available modules in detail.
 
-_LOREM IPSUM_
+### `dir` — _Directories and files enumeration mode_
 
-### `dns` — A/AAAA DNS entries enumeration mode
+The `dir` module can be used to discover new content. You can set up a wordlist and an extensions list to discover directories and files hosted on the web server. Rustbuster will send all the requests with the given concurrency level and report back which one are existing.
 
-_LOREM IPSUM_
+[![asciicast](https://asciinema.org/a/sMvjfHRo4SS88BuCdnXdwmbxh.svg)](https://asciinema.org/a/sMvjfHRo4SS88BuCdnXdwmbxh)
 
-### `vhost` — Virtual hosts enumeration mode
+### `dns` — _A/AAAA DNS entries enumeration mode_
 
-_LOREM IPSUM_
+The `dns` module can be used to discover subdomains of a given domain. It works by simply asking your default DNS resolver to resolve potential hostnames and reporting which one successfully resolve.
 
-### `fuzz` — Custom fuzzing enumeration mode
+[![asciicast](https://asciinema.org/a/cunb8Nf8p90pMztu6kPkbINJY.svg)](https://asciinema.org/a/cunb8Nf8p90pMztu6kPkbINJY)
 
-_LOREM IPSUM_
+### `vhost` — _Virtual hosts enumeration mode_
 
-### `tilde` — IIS 8.3 shortname enumeration mode
+The `vhost` module can be used to enumerate which [Virtual Hosts](https://en.wikipedia.org/wiki/Virtual_hosting) are available on the web server. It works by fuzzing the [Host HTTP Header](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Host) using the given wordlist.
 
-_LOREM IPSUM_
+[![asciicast](https://asciinema.org/a/zxlx9aahMYyvhmZxdsKfZz3Ph.svg)](https://asciinema.org/a/zxlx9aahMYyvhmZxdsKfZz3Ph)
+
+### `fuzz` — _Custom fuzzing enumeration mode_
+
+The `fuzz` module can be used when a more flexible fuzzing pattern is needed. You can define the injection points and a wordlist for each of them. A [cartesian product](https://en.wikipedia.org/wiki/Cartesian_product) of requests will be generated.
+
+[![asciicast](https://asciinema.org/a/yMhk9C5HcKtrlkzFJS9a8m2WR.svg)](https://asciinema.org/a/yMhk9C5HcKtrlkzFJS9a8m2WR)
+
+### `tilde` — _IIS 8.3 shortname enumeration mode_
+
+The `tilde` module can be used to exploit the [known information disclosure issue](https://soroush.secproject.com/downloadable/microsoft_iis_tilde_character_vulnerability_feature.pdf) related to Microsoft IIS and [DOS 8.3 filenames](https://en.wikipedia.org/wiki/8.3_filename) that makes possible to easily enumerate the server side file system structure.
+
+[![asciicast](https://asciinema.org/a/Knl1CtC0Q4gkPEaPl4hpG8eFQ.svg)](https://asciinema.org/a/Knl1CtC0Q4gkPEaPl4hpG8eFQ)
 
 ## Installation
 
