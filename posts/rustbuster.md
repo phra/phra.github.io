@@ -27,6 +27,16 @@ If you are interested into learning the language, check out [The Rust Programmin
 
 Rustbuster was started as a Rust playground project with [@ps1dr3x](https://twitter.com/ps1dr3x) with the goal of reimplement a [DirBuster](https://sourceforge.net/projects/dirbuster/) equivalent. It ended up by becoming a collection of modules useful in different situation. Having a single executable suitable for most common web fuzzing tasks is very handy. At the time of writing, there are five modules available, that are: `dir`, `dns`, `vhost`, `fuzz` and `tilde`.
 
+
+| Features Matrix  | Directories and Files | A/AAAA DNS Entries| Vhost Enumeration | Custom Fuzzing | 8.3 Short Names 
+|---|---|---|---|---| --- |
+| DirBuster | ✓ | ✗ | ✗ | ✗ | ✗ |
+| Gobuster  | ✓  | ✓ | ✓ | ✗ | ✗ |
+| Wfuzz     | ✓ | ✗ | ✓ | ✓ | ✗ |
+| Patator   | ✗ | ✗ | ✗ | ✓ | ✗ |
+| IIS Short Name Scanner | ✗ | ✗ | ✗ | ✗ | ✓ |
+| Rustbuster | ✓ | ✓ | ✓ | ✓ | ✓ |
+
 ## Modules
 
 Let's see each available modules in detail.
