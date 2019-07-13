@@ -59,7 +59,7 @@ The `dns` module can be used to discover subdomains of a given domain. It works 
 Example command:
 
 ```text
-rustbuster dns -u google.com -w examples/wordlist
+rustbuster dns -d google.com -w examples/wordlist
 ```
 
 [![asciicast](https://asciinema.org/a/cunb8Nf8p90pMztu6kPkbINJY.svg)](https://asciinema.org/a/cunb8Nf8p90pMztu6kPkbINJY)
