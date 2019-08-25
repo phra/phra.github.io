@@ -27,6 +27,7 @@ _References_
 
 # Posts
 
+- **Aug 26, 2019:** [Exfiltrate Like a Pro: Using DNS over HTTPS as a C2 Channel](./posts/dnscat2-over-doh.html)
 - **Jul 11, 2019:** [Introducing Rustbuster — A Comprehensive Web Fuzzing and Content Discovery Tool](./posts/rustbuster.html)
 - **Apr 15, 2019:** [Antimalware Scan Interface (AMSI) — A Red Team Analysis on Evasion](./posts/amsi.html)
 - **Oct 30, 2018:** [Java Deserialization  —  From Discovery to Reverse Shell on Limited Environments](./posts/java-deserialization.html)
