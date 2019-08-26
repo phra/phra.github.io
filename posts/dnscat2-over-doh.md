@@ -52,6 +52,11 @@ iwantmore.pizza.	1799	IN	CNAME	phra.github.io.
 ;; MSG SIZE  rcvd: 72
 ```
 
+For more information about the DNS protocol, you can check these articles:
+
+1. [Namecheap - What is DNS?](https://www.namecheap.com/dns/what-is-dns-domain-name-system-definition/)
+2. [Cloudflare - What is DNS?](https://www.cloudflare.com/learning/dns/what-is-dns/)
+
 ## DNS as C2 Channel
 
 If we set up a NS record for `exfil.iwantmore.pizza` pointing to an IP that we control and we try to resolve a subdomain like this:
