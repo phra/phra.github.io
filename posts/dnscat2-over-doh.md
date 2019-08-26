@@ -209,6 +209,26 @@ We successfully set up a reverse DNS over HTTPS C2 channel with HTTP/2, High Rep
 
 At the time of writing, no open source C2 agent/implant implement this exfiltration technique yet, but, as shown, it could be an effective and hard to detect method to indirectly communicate with a C2 server. It will be a neat feature to have and I am curious to see if it's going to be implemented as a communication option for some major products out there.
 
+## Bonus Point: Redirect DNS Traffic to your local VM
+
+If you want to forward the DNS traffic from the Authoritative Name Server to your local VM, you can use a mix of SSH and Socat commands, like shown in this [@rvrsh3ll](https://twitter.com/424f424f)'s [article](https://medium.com/rvrsh3ll/redirecting-cobalt-strike-dns-beacons-e3dcdb5a8b9b):
+
+- On the Authoritative Name Server:
+
+```bash
+# redirect all UDP traffic to a local TCP port
+socat udp4-listen:53,reuseaddr,fork tcp:localhost:53535
+```
+
+- On the local VM:
+
+```bash
+# forward the TCP port to the VM
+ssh <AUTHORITATIVE_NAME_SERVER> -L 53535:localhost:53535
+# redirect all TCP traffic to a local UDP port
+socat tcp4-listen:53535,reuseaddr,fork UDP:localhost:53
+```
+
 ## References
 
 1. [Dnscat2](https://github.com/iagox86/dnscat2)
