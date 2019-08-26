@@ -229,7 +229,7 @@ socat udp4-listen:53,reuseaddr,fork tcp:localhost:53535
 
 ```bash
 # forward the TCP port to the VM
-ssh <AUTHORITATIVE_NAME_SERVER> -L 53535:localhost:53535
+ssh <AUTHORITATIVE_NAME_SERVER> -R 53535:localhost:53535
 # redirect all TCP traffic to a local UDP port
 socat tcp4-listen:53535,reuseaddr,fork UDP:localhost:53
 ```
