@@ -198,7 +198,7 @@ Now that everything is set up, we can confirm that it is working as expected: le
 
 ## Results
 
-We successfully set up a reverse DNS over HTTPS C2 channel with HTTP/2, High Reputation Domain Fronting and A-grade TLS support!
+We successfully set up a **reverse DNS over HTTPS C2 channel** with **HTTP/2**, **High Reputation Domain Fronting** and **A-grade TLS** support!
 
 - [HTTP/2](https://http2.pro/check?url=https%3A//dns.google/)  
 
