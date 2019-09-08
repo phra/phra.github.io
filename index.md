@@ -15,13 +15,15 @@ layout: default
 
 **CTF Team:** d0nkeys @ [HackTheBox](https://www.hackthebox.eu/home/teams/profile/45)
 
-<br/><br/>
+<br/>
 
 _References_
 
 **GitHub:** [https://github.com/phra](https://github.com/phra)
 
 **Linkedin:** [https://www.linkedin.com/in/phraa](https://www.linkedin.com/in/phraa/)
+
+**Twitter:** [https://twitter.com/phraaaaaaa](https://twitter.com/phraaaaaaa/)
 
 <br clear="left"/>
 
