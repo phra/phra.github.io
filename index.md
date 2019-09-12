@@ -29,6 +29,7 @@ _References_
 
 # Posts
 
+- **Sep 12, 2019:** [CVE-2019-10392 — Yet Another 2k19 Authenticated Remote Command Execution in Jenkins](./posts/cve-2019-10392.html)
 - **Aug 26, 2019:** [Exfiltrate Like a Pro: Using DNS over HTTPS as a C2 Channel](./posts/dnscat2-over-doh.html)
 - **Jul 11, 2019:** [Introducing Rustbuster — A Comprehensive Web Fuzzing and Content Discovery Tool](./posts/rustbuster.html)
 - **Apr 15, 2019:** [Antimalware Scan Interface (AMSI) — A Red Team Analysis on Evasion](./posts/amsi.html)
