@@ -214,7 +214,7 @@ Bye!
 [*] Post module execution completed
 ```
 
-![demo](../assets/images/shellcode-inject.jpg "Demo")
+![demo](../assets/images/shellcode_inject.jpg "Demo")
 
 It works, awesome! 🚀
 
