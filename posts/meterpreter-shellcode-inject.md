@@ -8,6 +8,8 @@ _**Oct 3, 2019**_
 
 I played a bit with the awesome [Donut](https://github.com/TheWover/donut) project, ending up writing a module for executing arbitrary shellcode within Meterpreter aka executing Mimikatz in-memory, reflectively and interactively! 🐱‍👤
 
+[![asciicast](https://asciinema.org/a/IqHrCBG9R8jwCzJkCdaOXLSHJ.svg)](https://asciinema.org/a/IqHrCBG9R8jwCzJkCdaOXLSHJ)
+
 ## Motivation
 
 [Donut](https://github.com/TheWover/donut) enables us to execute arbitrary .NET assembly, EXE, DLL, VBS, JS or XSL in-memory via Position Indipendent Code generation. Since I wrote in the past [the module for the Juicy variant of *Potato exploit](https://github.com/rapid7/metasploit-framework/blob/master/modules/exploits/windows/local/ms16_075_reflection_juicy.rb), I knew that Metasploit offers some nice APIs to inject and run arbitrary shellcode, so I decided to write a module for arbitrary shellcode execution. I will demo it by popping an interactive, memory-only instance of Mimikatz!
