@@ -4,7 +4,7 @@ layout: default
 
 _**Oct 3, 2019**_
 
-## We Don't Need PowerShell.exe: Meterpreter edition!
+## We Don't Need PowerShell.exe: Meterpreter Edition!
 
 I am keeping playing with the awesome [Donut](https://github.com/TheWover/donut) project and this time we are going to spawn a reflective, interactive PowerShell session without relying on `powershell.exe`! 🐱‍👤
 
