@@ -29,7 +29,7 @@ _References_
 
 # Posts
 
-- **Oct 7, 2019:** [We Don't Need PowerShell.exe: Meterpreter edition!](./posts/meterpreter-psattack.html)
+- **Oct 7, 2019:** [We Don't Need PowerShell.exe: Meterpreter Edition!](./posts/meterpreter-psattack.html)
 - **Oct 3, 2019:** [Meterpreter + Donut = Reflectively and Interactively Executing Arbitrary Executables via Shellcode Injection](./posts/meterpreter-shellcode-inject.html)
 - **Sep 12, 2019:** [CVE-2019-10392 — Yet Another 2k19 Authenticated Remote Command Execution in Jenkins](./posts/cve-2019-10392.html)
 - **Aug 26, 2019:** [Exfiltrate Like a Pro: Using DNS over HTTPS as a C2 Channel](./posts/dnscat2-over-doh.html)
