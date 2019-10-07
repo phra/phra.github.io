@@ -14,11 +14,11 @@ I am keeping playing with the awesome [Donut](https://github.com/TheWover/donut)
 
 First, I suggest to read the following blog posts for a bit of context:
 
-- https://decoder.cloud/2017/11/02/we-dont-need-powershell-exe/
-- https://decoder.cloud/2017/11/08/we-dont-need-powershell-exe-part-2/
-- https://decoder.cloud/2017/11/17/we-dont-need-powershell-exe-part-3/
-- https://decoder.cloud/2017/12/13/we-dont-need-powershell-exe-4/
-- https://iwantmore.pizza/posts/meterpreter-shellcode-inject.html
+- [https://decoder.cloud/2017/11/02/we-dont-need-powershell-exe/](https://decoder.cloud/2017/11/02/we-dont-need-powershell-exe/)
+- [https://decoder.cloud/2017/11/08/we-dont-need-powershell-exe-part-2/](https://decoder.cloud/2017/11/08/we-dont-need-powershell-exe-part-2/)
+- [https://decoder.cloud/2017/11/17/we-dont-need-powershell-exe-part-3/](https://decoder.cloud/2017/11/17/we-dont-need-powershell-exe-part-3/])
+- [https://decoder.cloud/2017/12/13/we-dont-need-powershell-exe-4/](https://decoder.cloud/2017/12/13/we-dont-need-powershell-exe-4/)
+- [https://iwantmore.pizza/posts/meterpreter-shellcode-inject.html](https://iwantmore.pizza/posts/meterpreter-shellcode-inject.html)
 
 ## Motivation
 
