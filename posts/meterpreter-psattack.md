@@ -42,7 +42,7 @@ $ donut -f /tmp/psattack.exe -a 2 -o /tmp/psattack.bin
 
   [ Instance type : PIC
   [ Module file   : "/tmp/psattack.exe"
-  [ File type     : :NET EXE
+  [ File type     : .NET EXE
   [ Target CPU    : AMD64
   [ AMSI/WDLP     : continue
   [ Shellcode     : "/tmp/psattack.bin"
