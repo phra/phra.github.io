@@ -29,6 +29,7 @@ _References_
 
 # Posts
 
+- **Nov 4, 2019:** [CVE-2019-1414 — a Local Command Execution in Visual Studio Code](./posts/cve-2019-1414.html)
 - **Oct 7, 2019:** [We Don't Need PowerShell.exe: Meterpreter Edition!](./posts/meterpreter-psattack.html)
 - **Oct 3, 2019:** [Meterpreter + Donut = Reflectively and Interactively Executing Arbitrary Executables via Shellcode Injection](./posts/meterpreter-shellcode-inject.html)
 - **Sep 12, 2019:** [CVE-2019-10392 — Yet Another 2k19 Authenticated Remote Command Execution in Jenkins](./posts/cve-2019-10392.html)
