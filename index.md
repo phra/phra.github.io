@@ -29,6 +29,7 @@ _References_
 
 # Posts
 
+- **Nov 13, 2019:** [QuickZip 4.60 - Win10 WoW64 SEH Overflow Exploit](./posts/quickzip-seh-win10-wow64.html)
 - **Nov 4, 2019:** [CVE-2019-1414 — a Local Command Execution in Visual Studio Code](./posts/cve-2019-1414.html)
 - **Oct 7, 2019:** [We Don't Need PowerShell.exe: Meterpreter Edition!](./posts/meterpreter-psattack.html)
 - **Oct 3, 2019:** [Meterpreter + Donut = Reflectively and Interactively Executing Arbitrary Executables via Shellcode Injection](./posts/meterpreter-shellcode-inject.html)
