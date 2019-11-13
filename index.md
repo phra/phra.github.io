@@ -32,7 +32,7 @@ _References_
 - **Nov 13, 2019:** [QuickZip 4.60 - Win10 WoW64 SEH Overflow Exploit](./posts/quickzip-seh-win10-wow64.html)
 - **Nov 04, 2019:** [CVE-2019-1414 — a Local Command Execution in Visual Studio Code](./posts/cve-2019-1414.html)
 - **Oct 07, 2019:** [We Don't Need PowerShell.exe: Meterpreter Edition!](./posts/meterpreter-psattack.html)
-- **Oct 03, 2019:** [Meterpreter + Donut = Reflectively and Interactively Executing Arbitrary Executables via Shellcode Injection](./posts/meterpreter-shellcode-inject.html)
+- **Oct 03, 2019:** [Meterpreter + Donut = Reflectively and Interactively Executing Arbitrary Executables](./posts/meterpreter-shellcode-inject.html)
 - **Sep 12, 2019:** [CVE-2019-10392 — Yet Another 2k19 Authenticated Remote Command Execution in Jenkins](./posts/cve-2019-10392.html)
 - **Aug 26, 2019:** [Exfiltrate Like a Pro: Using DNS over HTTPS as a C2 Channel](./posts/dnscat2-over-doh.html)
 - **Jul 11, 2019:** [Introducing Rustbuster — A Comprehensive Web Fuzzing and Content Discovery Tool](./posts/rustbuster.html)
