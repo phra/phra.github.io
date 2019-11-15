@@ -32,6 +32,12 @@ function hex(a) {
 function and(a, b) {
     return a & b;
 }
+function or(a, b) {
+    return a | b;
+}
+function add(a, b) {
+    return Uint32Array.from([a + b])[0];
+}
 function sub(a, b) {
     return Uint32Array.from([a - b])[0];
 }
@@ -55,7 +61,7 @@ function getZeroAndEax2(allowedChars, length = 4) {
     }
     return [c, d];
 }
-function getSingleSubEncode(value, allowedChars) {
+function getSingleSubEncode(value, previousRemainder = 0, allowedChars) {
     const allowedCharsArray = allowedChars.split('');
     for (let i = 0; i < allowedCharsArray.length; i++) {
         for (let j = 0; j < allowedCharsArray.length; j++) {
@@ -63,7 +69,7 @@ function getSingleSubEncode(value, allowedChars) {
                 let a = allowedCharsArray[i].charCodeAt(0), b = allowedCharsArray[j].charCodeAt(0), c = allowedCharsArray[k].charCodeAt(0);
                 let res = sub(sub(sub(0, a), b), c);
                 if (and(res, 0xff) === value) {
-                    return [a, b, c, 0xff - and(res, 0xff00) >> 8];
+                    return [a, b, c, add(sub(0xff, res), previousRemainder) >> 8];
                 }
             }
         }
@@ -73,9 +79,8 @@ function getSingleSubEncode(value, allowedChars) {
 function getSubEncode(value, allowedChars, length = 4) {
     let remaining = value, remainder = 0, a = 0, b = 0, c = 0;
     for (let i = 0; i < length; i++) {
-        const current = and(remaining + remainder, 0x00000000000000ff);
-        console.log(`encoding ${hex(current)}`)
-        const [d, e, f, r] = getSingleSubEncode(current, allowedChars);
+        const current = and(add(remaining, remainder), 0x00000000000000ff);
+        const [d, e, f, r] = getSingleSubEncode(current, remainder, allowedChars);
         a = (d << (8 * i)) | a;
         b = (e << (8 * i)) | b;
         c = (f << (8 * i)) | c;
@@ -124,6 +129,14 @@ function and(a: number, b: number) {
     return a & b
 }
 
+function or(a: number, b: number) {
+    return a | b
+}
+
+function add(a: number, b: number) {
+    return Uint32Array.from([a + b])[0]
+}
+
 function sub(a: number, b: number) {
     return Uint32Array.from([a - b])[0]
 }
@@ -152,7 +165,7 @@ function getZeroAndEax2(allowedChars: string, length = 4): [number, number] {
     return [c, d]
 }
 
-function getSingleSubEncode(value: number, allowedChars: string): [number, number, number, number] {
+function getSingleSubEncode(value: number, previousRemainder = 0, allowedChars: string): [number, number, number, number] {
     const allowedCharsArray = allowedChars.split('')
     for (let i = 0; i < allowedCharsArray.length; i++) {
         for (let j = 0; j < allowedCharsArray.length; j++) {
@@ -164,7 +177,7 @@ function getSingleSubEncode(value: number, allowedChars: string): [number, numbe
                 let res = sub(sub(sub(0, a), b), c)
 
                 if (and(res, 0xff) === value) {
-                    return [a, b, c, 0xff - and(res, 0xff00) >> 8]
+                    return [a, b, c, add(sub(0xff, res), previousRemainder) >> 8]
                 }
             }
         }
@@ -181,8 +194,8 @@ function getSubEncode(value: number, allowedChars: string, length = 4): [number,
         c = 0
 
     for (let i = 0; i < length; i++) {
-        const current = and(remaining + remainder, 0x00000000000000ff)
-        const [d, e, f, r] = getSingleSubEncode(current, allowedChars)
+        const current = and(add(remaining, remainder), 0x00000000000000ff)
+        const [d, e, f, r] = getSingleSubEncode(current, remainder, allowedChars)
         a = (d << (8 * i)) | a
         b = (e << (8 * i)) | b
         c = (f << (8 * i)) | c
