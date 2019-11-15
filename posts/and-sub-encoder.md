@@ -4,7 +4,7 @@ layout: default
 
 _**Nov 15, 2019**_
 
-# x86 AND-SUB Encoder
+# x86 ASCII AND-SUB Encoder
 
 I wrote a JavaScript x86 ASCII AND-SUB encoder and since it's just JavaScript we can run it in the browser! 🚀
 
