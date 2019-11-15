@@ -6,7 +6,7 @@ _**Nov 15, 2019**_
 
 # x86 AND-SUB Encoder
 
-I wrote a JavaScript x86 AND-SUB encoder and since it's just JavaScript we can run it in the browser! 🚀
+I wrote a JavaScript x86 ASCII AND-SUB encoder and since it's just JavaScript we can run it in the browser! 🚀
 
 ## Try it out
 
