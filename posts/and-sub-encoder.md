@@ -159,7 +159,7 @@ function encodeShellcode(shellcode) {
 
 function encode(value) {
     value = value || '0xdeadbeef'
-    let output = encodeValueInEAX(value)
+    let output = encodeValueInEAX(parseInt(value, 16))
     document.querySelector('#code').innerText = output
 }
 
