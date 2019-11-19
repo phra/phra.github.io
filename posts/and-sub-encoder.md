@@ -133,11 +133,7 @@ function encodeShellcode(shellcode) {
     const reversedShellcode = paddedShellcode.split('').reverse().join('')
     let output = ''
     let stubLength = 0
-    // metasm >
-    output += `push eax\n` // \x50
-    stubLength += 1
-    output += `pop ebx\n` // \x59
-    stubLength += 1
+
     output += `ADD_EAX_PLACEHOLDER`
     stubLength += 15
     output += "push eax\n" // \x51
@@ -314,11 +310,7 @@ function encodeShellcode(shellcode: string) {
     const reversedShellcode = paddedShellcode.split('').reverse().join('')
     let output = ''
     let stubLength = 0
-    // metasm >
-    output += `push eax\n` // \x50
-    stubLength += 1
-    output += `pop ebx\n` // \x59
-    stubLength += 1
+
     output += `ADD_EAX_PLACEHOLDER`
     stubLength += 15
     output += "push eax\n" // \x51
