@@ -176,7 +176,7 @@ encode2()
 
 ## Source Code (for Node.js)
 
-Usage: `ts-node index.ts 0xdeadbeef`
+Usage: `ts-node index.ts`
 
 Source:
 
