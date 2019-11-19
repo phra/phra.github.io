@@ -19,7 +19,7 @@ Output:
     </code>
 </div>
 
-Shellcode to encode: <input name="shellcode" id="shellcode" type="text" value="\xb8\xef\xbe\xad\xde" placeholder="\xb8\xef\xbe\xad\xde"> <button onclick="encode2(document.querySelector('#shellcode').value)">ENCODE</button>
+Shellcode to encode (address of encoder in EAX): <input name="shellcode" id="shellcode" type="text" value="\xb8\xef\xbe\xad\xde" placeholder="\xb8\xef\xbe\xad\xde"> <button onclick="encode2(document.querySelector('#shellcode').value)">ENCODE</button>
 
 Output:
 
