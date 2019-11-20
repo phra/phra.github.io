@@ -174,7 +174,7 @@ encode2()
 
 </script>
 
-## Source Code (for Node.js)
+## Source Code
 
 Usage: `ts-node index.ts`
 
