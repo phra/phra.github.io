@@ -29,7 +29,7 @@ _References_
 
 # Posts
 
-
+- **Dec 18, 2019:** [Meterpreter + PPID Spoofing — Blending into the Target Environment](./posts/meterpreter-ppid-spoofing.html)
 - **Nov 15, 2019:** [x86 ASCII AND-SUB Encoder](./posts/and-sub-encoder.html)
 - **Nov 13, 2019:** [QuickZip 4.60 - Win10 WoW64 SEH Overflow Exploit](./posts/quickzip-seh-win10-wow64.html)
 - **Nov 04, 2019:** [CVE-2019-1414 — a Local Command Execution in Visual Studio Code](./posts/cve-2019-1414.html)
