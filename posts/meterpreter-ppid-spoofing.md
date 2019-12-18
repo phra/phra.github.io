@@ -6,9 +6,9 @@ _**Dec 18, 2019**_
 
 ## Meterpreter + PPID Spoofing — Blending into the Target Environment
 
-<script id="asciicast-O8NNimI7pwzrc00s3h3plSWkZ" src="https://asciinema.org/a/O8NNimI7pwzrc00s3h3plSWkZ.js" async></script>
-
 The [Parent Process Identifier (PPID) Spoofing](https://attack.mitre.org/techniques/T1502/) is a quite fascinating technique since it enables malicious applications to spawn new processes under a different parent process ID. It is been used in the wild since ever to hide malware, especially when some kind of persistence is required. Let's see together how to implement this capability into the Meterpreter agent.
+
+<script id="asciicast-O8NNimI7pwzrc00s3h3plSWkZ" src="https://asciinema.org/a/O8NNimI7pwzrc00s3h3plSWkZ.js" async></script>
 
 ## Motivation
 
