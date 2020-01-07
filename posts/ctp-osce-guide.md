@@ -284,6 +284,20 @@ I strongly suggest to use the mona.py script with Immunity Debugger in order to 
 
 - `!mona cmp -a <ADDR> -f <FILE>`: it compares a chunk of memory with a specified file on disk in order to detected potential truncations or bad characters and displays a nice matrix to present the results.
 
+### Python Helper Library
+
+During the exploitation exercises, I wrote a simple Python library to speed up the development process. [Here](https://github.com/phra/bof-helper/blob/master/helper.py) you can find an updated version of it.
+
+At the moment, it's able to perform the following tasks:
+
+- pattern generation
+- pattern matching
+- payload padding
+- packing
+- logging
+
+Check the [README](https://github.com/phra/bof-helper) for the usage examples.
+
 ## Feedback
 
 I really enjoyed this course from the very beginning since you will have to deal with advanced technical topics and low level challenges. After having finished it, I can affirm that I learned a lot from it and this knowledge will be fundamental to study and research more advanced topics, such as exploitation mitigations and protections of modern Windows versions.
