@@ -13,9 +13,9 @@ layout: default
 
 **Where am I:** Amsterdam, NL
 
-**CTF Team:** d0nkeys @ [HackTheBox](https://www.hackthebox.eu/home/teams/profile/45)
+**Certifications:** OSCP, OSCE
 
-<br/>
+**CTF Team:** d0nkeys @ [HackTheBox](https://www.hackthebox.eu/home/teams/profile/45)
 
 _References_
 
@@ -29,6 +29,7 @@ _References_
 
 # Posts
 
+- **Jan 07, 2020:** [Cracking the Perimeter (CTP) and Offensive Security Certified Expert (OSCE) Guide](./posts/ctp-osce-guide.html)
 - **Dec 18, 2019:** [Meterpreter + PPID Spoofing — Blending into the Target Environment](./posts/meterpreter-ppid-spoofing.html)
 - **Nov 15, 2019:** [x86 ASCII AND-SUB Encoder](./posts/and-sub-encoder.html)
 - **Nov 13, 2019:** [QuickZip 4.60 - Win10 WoW64 SEH Overflow Exploit](./posts/quickzip-seh-win10-wow64.html)
