@@ -74,7 +74,7 @@ I also have now a basic knowledge regarding AV evasion techniques that involve P
 
 ## Exam
 
-The exam consist in a 48-hours practical challenge where you have to solve multiple machines using similar techniques to the ones shown during the course itself. The course is meant to introduce the candidate to the basic concepts that can be later used by him/her to proceed further in the learning process. After the practical part, the candidate has 24 hours more to write and send the complete final report where every step is described by a technical explaination and supported by screenshots.
+The exam consist in a 48 hours practical challenge where you have to solve multiple machines using similar techniques to the ones shown during the course itself. The course is meant to introduce the candidate to the basic concepts that can be later used by him/her to proceed further in the learning process. After the practical part, the candidate has 24 hours more to write and send the complete final report where every step is described by a technical explaination and supported by screenshots.
 
 Some suggestions for the exam are:
 
@@ -149,7 +149,7 @@ On GNU/Linux systems, you can check if the signature is still present with the f
 
 ### Shellcoding and Custom Encoders
 
-During the course, a specific technique to manually encode arbitrary shellcode in an alphanumeric fashion. You can practice with it by replicating the exact same exploit shown in the course or by trying the famous [QuickZip 4.60 SEH Overflow Exploit](https://iwantmore.pizza/posts/quickzip-seh-win10-wow64.html).
+During the course, a specific technique is shown to manually encode arbitrary shellcode in an alphanumeric fashion. You can practice with it by replicating the exact same exploit shown in the course or by trying the famous [QuickZip 4.60 SEH Overflow Exploit](https://iwantmore.pizza/posts/quickzip-seh-win10-wow64.html).
 
 After you have understood the encoding and decoding processes and tried it manually a couple of times, you can try to automate the flow by coding your first, very own encoder.
 
@@ -295,6 +295,7 @@ I really suggest to attend the Cracking the Perimeter course if you are interest
 - [Backdooring PE Files - Part 1](https://sector876.blogspot.com/2013/03/backdooring-pe-files-part-1.html)
 - [Backdooring PE Files - Part 2](https://sector876.blogspot.com/2013/03/backdooring-pe-files-part-2.html)
 - [Exploit writing tutorial part 8: Win32 Egg Hunting](https://www.corelan.be/index.php/2010/01/09/exploit-writing-tutorial-part-8-win32-egg-hunting/)
+- [Exploit writing tutorial part 9: Win32 Shellcoding](https://www.corelan.be/index.php/2010/02/25/exploit-writing-tutorial-part-9-introduction-to-win32-shellcoding/)
 - [DEF CON 16 - Mati Aharoni: BackTrack Foo - From bug to 0day](https://www.youtube.com/watch?v=axTthxE-z6A)
 - [Introductory Exploit Development Live Stream - x86 Assembly Primer and SEH Overflows](https://www.youtube.com/watch?v=cpmdqMbEJyA)
 
