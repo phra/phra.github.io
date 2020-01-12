@@ -185,8 +185,8 @@ type "exit" or "quit" to quit
 use ";" or "\n" for newline
 type "file <file>" to parse a GAS assembler source file
 
-metasm > je $-99; jne $-97;
-"\x74\x9b\x75\x9d"
+metasm > je $-97; jne $-99;
+"\x74\x9d\x75\x9b"
 ```
 
 - NASM
