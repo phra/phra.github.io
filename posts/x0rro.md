@@ -48,6 +48,7 @@ We also need to produce a valid Position Indipendent Code for our stub in order 
 The template for the x86 Linux will be something similar to the following:
 
 ```nasm
+{% raw %}
 ; i386 syscall args: ebx ecx edx esi edi ebp
 ; 0x7d i386 mprotect { int mprotect(caddr_t addr, size_t len, int prot); }
 
@@ -85,11 +86,13 @@ _restore_registers:
     pop edx
 _jmp_back:
     jmp edi
+{% endraw %}
 ```
 
 and for x86_64 Linux:
 
 ```nasm
+{% raw %}
 ; parameter order is: %rdi, %rsi, %rdx, %rcx, %r8, %r9, then push the rest on the stack in reverse order
 ; 74 AUE_MPROTECT { int mprotect(caddr_t addr, size_t len, int prot); }
 
@@ -122,7 +125,7 @@ _restore_registers:
     pop rdi
 _jmp_back:
     jmp {{{entry_point}}}
-
+{% endraw %}
 ```
 
 ## x0rro
