@@ -141,6 +141,12 @@ sys/user.sh
 export PATH=~/bin/:$PATH
 ```
 
+We also need to install LIEF library:
+
+```bash
+pip3 install lief
+```
+
 From sources:
 
 ```bash
@@ -184,6 +190,6 @@ We can achieve the same result by using the interactive wizard, as shown here:
 x0rro interactive my_file
 ```
 
-![Kitten](../assets/images/x0rro.png "A cute kitten")
+![x0rro](../assets/images/x0rro.png "x0rro")
 
 [back](../)
