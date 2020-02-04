@@ -29,6 +29,7 @@ _References_
 
 # Posts
 
+- **Feb 04, 2020:** [x0rro — A PE/ELF/MachO Crypter for x86 and x86_64 Based on Radare2](./posts/x0rro.html)
 - **Jan 07, 2020:** [Cracking the Perimeter (CTP) and Offensive Security Certified Expert (OSCE) Guide](./posts/ctp-osce-guide.html)
 - **Dec 18, 2019:** [Meterpreter + PPID Spoofing — Blending into the Target Environment](./posts/meterpreter-ppid-spoofing.html)
 - **Nov 15, 2019:** [x86 ASCII AND-SUB Encoder](./posts/and-sub-encoder.html)
