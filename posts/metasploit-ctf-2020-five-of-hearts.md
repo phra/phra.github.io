@@ -58,7 +58,7 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
 
 From the first output we can identify the following informations:
 
-- since the `%p` specifier is printing 8-bytes values, it means that the application is running on a 64-bit architecture.
+- since the `%p` specifier is printing 8-byte values, it means that the application is running on a 64-bit architecture.
 - we can identify the canary value because it always ends with a `\x00` character and in this case it's `0xf6d0049f13023b00`.
 - we leak some addresses that doesn't really make sense in a X86_64 architecture, such as `0x103aa`.
 - if we send the payload multiple times, we notices every time different canary values, indicating that the application is restarted after each connection and it's likely exposed on the network by the [inetd](https://www.freebsd.org/cgi/man.cgi?inetd(8)) service.
