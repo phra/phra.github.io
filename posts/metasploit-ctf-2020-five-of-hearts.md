@@ -6,7 +6,7 @@ _**Feb 11, 2020**_
 
 # Metasploit CTF 2020 - Five of Hearts Writeup - RISC-V Buffer Overflow with NX and Canary
 
-I partecipated with my team [Donkeys](https://metasploitctf.com/team/1023) to the [Metsploit CTF 2020](https://metasploitctf.com/scoreboard) and we ended up fifth! I personally really enjoyed how the CTF was well curated and the quality of the challenges, especially the exotic ones like the [Plan 9 OS](https://en.wikipedia.org/wiki/Plan_9_from_Bell_Labs) based. In this writeup I will describe how we solved the _Five of Hearts_ binary challenge by exploiting a buffer overflow and bypassing NX and canaries on the [RISC-V](https://en.wikipedia.org/wiki/RISC-V) architecture.
+I participated with my team [Donkeys](https://metasploitctf.com/team/1023) to the [Metasploit CTF 2020](https://metasploitctf.com/scoreboard) and we ended up fifth! I personally really enjoyed how the CTF was well-curated and the quality of the challenges, especially the exotic ones like the [Plan 9 OS](https://en.wikipedia.org/wiki/Plan_9_from_Bell_Labs) based. In this writeup, I will describe how we solved the _Five of Hearts_ binary challenge by exploiting a buffer overflow and bypassing NX and canaries on the [RISC-V](https://en.wikipedia.org/wiki/RISC-V) architecture.
 
 <script id="asciicast-R0cCGFINFT2rrEdBUF36dc7Py" src="https://asciinema.org/a/R0cCGFINFT2rrEdBUF36dc7Py.js" async></script>
 
