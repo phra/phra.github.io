@@ -29,11 +29,12 @@ _References_
 
 # Posts
 
+- **Feb 11, 2020:** [Metasploit CTF 2020 — 5 of Hearts Writeup — RISC-V Buffer Overflow with NX and Canary](./posts/metasploit-ctf-2020-five-of-hearts.html)
 - **Feb 04, 2020:** [x0rro — A PE/ELF/MachO Crypter for x86 and x86_64 Based on Radare2](./posts/x0rro.html)
 - **Jan 07, 2020:** [Cracking the Perimeter (CTP) and Offensive Security Certified Expert (OSCE) Guide](./posts/ctp-osce-guide.html)
 - **Dec 18, 2019:** [Meterpreter + PPID Spoofing — Blending into the Target Environment](./posts/meterpreter-ppid-spoofing.html)
 - **Nov 15, 2019:** [x86 ASCII AND-SUB Encoder](./posts/and-sub-encoder.html)
-- **Nov 13, 2019:** [QuickZip 4.60 - Win10 WoW64 SEH Overflow Exploit](./posts/quickzip-seh-win10-wow64.html)
+- **Nov 13, 2019:** [QuickZip 4.60 — Win10 WoW64 SEH Overflow Exploit](./posts/quickzip-seh-win10-wow64.html)
 - **Nov 04, 2019:** [CVE-2019-1414 — a Local Command Execution in Visual Studio Code](./posts/cve-2019-1414.html)
 - **Oct 07, 2019:** [We Don't Need PowerShell.exe: Meterpreter Edition!](./posts/meterpreter-psattack.html)
 - **Oct 03, 2019:** [Meterpreter + Donut = Reflectively and Interactively Executing Arbitrary Executables](./posts/meterpreter-shellcode-inject.html)
