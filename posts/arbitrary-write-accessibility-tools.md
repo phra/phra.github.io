@@ -38,14 +38,14 @@ On Windows 10, we can adopt a variation of this attack by exploiting a known, bu
 
 In particular, when `osk.exe` is executed it looks for a `HID.dll` library. The original DLL is present at location `C:\Windows\System32\hid.dll` but `osk.exe` first looks for it at `C:\Program Files\Common Files\microsoft shared\ink\HID.dll`.
 
-By planting a malicious DLL at that location, we can intercept the `LoadLibrary` call and achieve command execution in the context of the user running `osk.exe` without messing up with the original executable, effectively avoiding breaking any existing accessibility feature and skipping _in toto_ noisy executable replacement in `C:\Windows\System32`.
+By planting a malicious DLL at that location, we can intercept the `LoadLibrary` call and achieve command execution in the context of the user running `osk.exe` without messing up with the original executable, effectively avoiding breaking any existing accessibility feature and skipping _in toto_ noisy executable replacements in `C:\Windows\System32`.
 
 ## Exploit Remote Machines with RDP
 
 This technique can also be used when the adversary doesn't have physical access to the target machine via the Remote Desktop Protocol (RDP). For example, let's imaging a scenario where we have access to a remote workstation where we can use an Arbitrary File Write vulnerability to plant our malicious DLL. In the past, there were some known, handy techniques used to kick off the execution of our DLL as `NT AUTHORITY\SYSTEM` but they were patched, such as:
 
-- DiagHub: https://googleprojectzero.blogspot.com/2018/04/windows-exploitation-tricks-exploiting.html
-- UsoSvc: https://itm4n.github.io/usodllloader-part1/
+- DiagHub: [https://googleprojectzero.blogspot.com/2018/04/windows-exploitation-tricks-exploiting.html](https://googleprojectzero.blogspot.com/2018/04/windows-exploitation-tricks-exploiting.html)
+- UsoSvc: [https://itm4n.github.io/usodllloader-part1/](https://itm4n.github.io/usodllloader-part1/)
 
 We may still have a possibility to abuse the accessibility tools to load our EXE/DLL by using the techniques showed above, but we need to face with the two following requirements:
 
