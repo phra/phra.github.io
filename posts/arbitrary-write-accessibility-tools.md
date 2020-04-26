@@ -47,7 +47,9 @@ This technique can also be used when the adversary doesn't have physical access 
 - DiagHub: [https://googleprojectzero.blogspot.com/2018/04/windows-exploitation-tricks-exploiting.html](https://googleprojectzero.blogspot.com/2018/04/windows-exploitation-tricks-exploiting.html)
 - UsoSvc: [https://itm4n.github.io/usodllloader-part1/](https://itm4n.github.io/usodllloader-part1/)
 
-We may still have a possibility to abuse the accessibility tools to load our EXE/DLL by using the techniques showed above, but we need to face with the two following requirements:
+We may still have a possibility to abuse the accessibility tools to load our EXE/DLL by using the techniques showed above, but first of all we require RDP to be enabled and we need to ensure that we are able to properly connect to it, in particular if [Network Level Authentication (NLA)](https://docs.microsoft.com/en-us/previous-versions/windows/it-pro/windows-server-2008-R2-and-2008/cc732713(v=ws.11)?redirectedfrom=MSDN) is enabled, as per default after Windows Vista, since NLA requires the client to pre-authenticate before the graphical RDP session is created.
+
+So in order to use we need to meet the two following requirements:
 
 1. RDP is enabled
 2. **if NLA is enabled**, we need valid credentials of a `Remote Desktop User` group member or equivalent
@@ -77,6 +79,12 @@ During my experiments, I discovered some tricks that I would like to share:
 - if NLA is enabled and the user we have the credentials of is already logged in, we can still trigger the On-Screen Keyboard by `NT AUTHORITY\SYSTEM` by pressing [Win+U] when the error message is displayed before the forced disconnection.
 
 ![osk.exe Error Message](../assets/images/osk-error-message.jpg "osk.exe Error Message")
+
+## Mitigations & Detections
+
+In order to mitigate the effectiveness of the technique, it's suggested to keep enabled NLA, as it will require valid credentials in pre-authentication phase and will also mitigate other exploits targeting the RDP protocol. If RDP is not strictly required, it's suggested to entirely disable it.
+
+To detect when this technique is used, it's suggested to monitor for changes to all the binaries mentioned above, including the location of the potential hijacked DLL (HID.dll) affecting `osk.exe`.
 
 ## Conclusion
 
