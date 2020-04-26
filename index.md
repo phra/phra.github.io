@@ -29,7 +29,7 @@ _References_
 
 # Posts
 
-- **Apr 27, 2020:** [Old Tricks Are Always Useful: Exploiting Arbitrary File Writes with Accessibility Tools](./posts/arbitrary-write-accessibility-tools.html)
+- **Apr 27, 2020:** [Old Tricks Are Always Useful: Exploiting Arbitrary File Writes w/ Accessibility Tools](./posts/arbitrary-write-accessibility-tools.html)
 - **Feb 11, 2020:** [Metasploit CTF 2020 — 5 of Hearts Writeup — RISC-V Buffer Overflow with NX and Canary](./posts/metasploit-ctf-2020-five-of-hearts.html)
 - **Feb 04, 2020:** [x0rro — A PE/ELF/MachO Crypter for x86 and x86_64 Based on Radare2](./posts/x0rro.html)
 - **Jan 07, 2020:** [Cracking the Perimeter (CTP) and Offensive Security Certified Expert (OSCE) Guide](./posts/ctp-osce-guide.html)
