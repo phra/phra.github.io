@@ -2,7 +2,7 @@
 layout: default
 ---
 
-_**May 29, 2018**_
+_**Apr 27, 2020**_
 
 # Old Tricks Are Always Useful: Exploiting Arbitrary File Writes with Accessibility Tools
 
