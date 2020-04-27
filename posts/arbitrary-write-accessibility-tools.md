@@ -50,7 +50,7 @@ More recently, [Clément Labro](https://twitter.com/itm4n) discovered a new tech
 
 - UsoSvc: [https://itm4n.github.io/usodllloader-part1/](https://itm4n.github.io/usodllloader-part1/)
 
-If those techniques are not available to use, e.g. you are dealing with an older release of the operating system, we may still have a possibility to abuse the accessibility tools to load our EXE/DLL by using the techniques showed above, but first of all we require RDP to be enabled and we need to ensure that we are able to properly connect to it, in particular if [Network Level Authentication (NLA)](https://docs.microsoft.com/en-us/previous-versions/windows/it-pro/windows-server-2008-R2-and-2008/cc732713(v=ws.11)?redirectedfrom=MSDN) is enabled, as per default after Windows Vista, since NLA requires the client to pre-authenticate before the graphical RDP session is created.
+If those techniques are not available, e.g. we are dealing with an older release of the operating system, we may still have a possibility to abuse the accessibility tools to load our EXE/DLL by using the techniques showed above, but first of all we require RDP to be enabled and we need to ensure that we are able to properly connect to it, in particular if [Network Level Authentication (NLA)](https://docs.microsoft.com/en-us/previous-versions/windows/it-pro/windows-server-2008-R2-and-2008/cc732713(v=ws.11)?redirectedfrom=MSDN) is enabled, as per default after Windows Vista, since NLA requires the client to pre-authenticate before the graphical RDP session is created.
 
 So in order to use we need to meet the two following requirements:
 
