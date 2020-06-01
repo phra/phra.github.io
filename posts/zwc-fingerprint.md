@@ -14,7 +14,7 @@ I've played a bit with the [StegCloak](https://github.com/KuroLabs/stegcloak) li
 
 ## Zero-Width Characters
 
-Zero-Width Characters are a special kind of [non-printing character](https://en.wikipedia.org/wiki/Control_character) (NPC) that renders differently from regular ones. For example, they can alter the aspect of previous/following characters, join or disjoin them or they can even not be rendered entirely. Counterintuitively, they are seamlessy transmitted during copy and paste operations. Due to this aspect, they can be used to watermark some text by embedding this special characters in the string and the fingerprint data can potentially travel across heterogeneous channels, e.g. by copying some text from a website and pasting it into a chat.
+Zero-Width Characters are a special kind of [non-printing characters](https://en.wikipedia.org/wiki/Control_character) (NPC) that renders differently from regular ones. For example, they can alter the aspect of previous/following characters, join or disjoin them or they can even not be rendered entirely. Counterintuitively, they are seamlessy transmitted during copy and paste operations. Due to this aspect, they can be used to watermark some text by embedding this special characters in the string and the fingerprint data can potentially travel across heterogeneous channels, e.g. by copying some text from a website and pasting it into a chat.
 
 ## StegCloak
 
@@ -64,7 +64,7 @@ $ echo -ne 'This ⁠‍‌‍⁡‌⁡⁢‍⁢is a confidential message.' | xxd
 
 ## Fingerprinting
 
-There are two main ways for a website to insert an invisible watermark in its context: server side or client side. In the first case it's simply possible to inspect the data received from the server for suspicious Unicode characters and strip/replace them with some visible ones. In the second case, the watermark is dynamically added via JavaScript, for example at `DOMContentLoaded` or `copy` events, making it harder to detect with a trivial static, data inspection. For example, imagine a website that adds an invisible watermark by using the following code:
+There are two main ways for a website to insert an invisible watermark in its content: server side or client side. In the first case it's simply possible to inspect the data received from the server for suspicious Unicode characters and strip/replace them with some visible ones. In the second case, the watermark is dynamically added via JavaScript, for example at `DOMContentLoaded` or `copy` events, making it harder to detect with a trivial static, data inspection. For example, imagine a website that adds an invisible watermark by using the following code:
 
 ```javascript
 document.addEventListener('DOMContentLoaded', (event) => {
