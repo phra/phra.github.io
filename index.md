@@ -29,6 +29,7 @@ _References_
 
 # Posts
 
+- **Jul 13, 2020:** [Designing and Implementing PEzor — an Open-Source Shellcode Injector and PE Packer](./posts/PEzor.html)
 - **Jun 02, 2020:** [Zero-Width Characters (ZWC) Fingerprinting — What is it and how can we protect?](./posts/zwc-fingerprint.html)
 - **Apr 27, 2020:** [Old Tricks Are Always Useful: Exploiting Arbitrary File Writes w/ Accessibility Tools](./posts/arbitrary-write-accessibility-tools.html)
 - **Feb 11, 2020:** [Metasploit CTF 2020 — 5 of Hearts Writeup — RISC-V Buffer Overflow with NX and Canary](./posts/metasploit-ctf-2020-five-of-hearts.html)
