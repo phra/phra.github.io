@@ -7,7 +7,7 @@ _**Jul 13, 2020**_
 # Designing and Implementing PEzor, an Open-Source PE Packer
 
 Red teamers often have the necessity of bypassing AV solutions and I recently needed a more powerful tool than [x0rro](https://iwantmore.pizza/posts/x0rro.html) in order to perform some tasks and bypass a solution that I was targeting.
-At the end of my development journey, I was satisfied enough with the result that I decided to open source the design and the implementation processes that I have followed in order to build my solution.
+At the end of my development journey, I was satisfied enough with the result that I decided to open-source the design and the implementation processes that I have followed in order to build my solution.
 
 ![PEzor Mimikatz](../assets/images/pezor-mimikatz.jpg "PEzor Mimikatz")
 
