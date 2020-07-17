@@ -224,7 +224,7 @@ Anyway, by trying our current, simple injector on different AV products, we noti
 
 ## User-Land Hooks Removal
 
-AV solutions often puts user-land checks by hooking some critical functions in the Windows APIs, such as `CreateRemoteThread` in order to monitor and eventually block malicious invocations, e.g. by looking for known signatures in the memory area where the thread is being created.
+AV solutions often put user-land checks by hooking some critical functions in the Windows APIs, such as `CreateRemoteThread` in order to monitor and eventually block malicious invocations, e.g. by looking for known signatures in the memory area where the thread is being created.
 If a product insert an inline hook in the `NtCreateThreadEx` function in the NTDLL module for monitoring purposes, we will not be able to scrape the syscall number correctly, leading to an undefined behaviour when we will try to manually invoke the syscall.
 In order to fix the mentioned issue, we need to restore the copy in-memory of the modified NTDLL from disk before scraping it. The project [DLLRefresher](https://github.com/CylanceVulnResearch/ReflectiveDLLRefresher) does exactly what we need and we will invoke its functionality immediately at the startup of our process. 
 After having integrated the C codebase into our C++ one, we can confirm that this has fixed the crashes we were experiencing with some specific security solutions.
