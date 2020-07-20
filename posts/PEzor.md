@@ -77,7 +77,7 @@ The library that I have used in my solution to inline the execution of the sysca
 This library is able to first scrape the in-memory NTDLL module in order to extract the raw syscall numbers. This is needed because the specific syscall numbers on Windows are constantly changing from release to release. After having retrieved the correct syscall numbers by manually parsing the loaded modules list directly from the PEB at runtime, the library uses dynamically generated stubs to manually invoke those syscalls without directly calling the loaded copy of NTDLL.
 The library has be used in the following fashion:
 first we need to declare the function prototypes of the syscalls that we want to invoke, after that we can use the `INLINE_SYSCALL` macro in order to invoke the specific syscall in a natural and elegant way.
-Then, at runtime, the `jm::init_syscalls_list()` function has to be called once at the beginning in order to scrape the in-memory copy of the loaded NTDLL and extract the syscall numbers for the specific Windows target.
+Then, at runtime, the `jm::init_syscalls_list()` function has to be called once at the beginning in order to scrape the in-memory copy of the loaded NTDLL in order to extract the syscall numbers for the specific Windows target.
 The following snippet shows the required code to be able to invoke the NtAllocateVirtualMemory syscall, the equivalent syscall of the `VirtualAlloc` Win32 API.
 
 ```cpp
