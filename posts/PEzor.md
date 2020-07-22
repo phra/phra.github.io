@@ -297,7 +297,7 @@ We will perform these checks before trasferring execution to the generated shell
 
 ## Source Code
 
-I am planning to release the [source code](https://github.com/phra) of my research on my [Github](https://github.com/phra) in the next days to leave some time up to defenders to perform some research too. If you are a _legit_ security vendor and you want to perform some testing before the public release, feel free to DM me on [Twitter](https://twitter.com/phraaaaaaa) or [Linkedin](https://www.linkedin.com/in/phraa/).
+I am planning to release the [source code](https://github.com/phra/PEzor) of my research on my [Github](https://github.com/phra) in the next days to leave some time up to defenders to perform some research too. If you are a _legit_ security vendor and you want to perform some testing before the public release, feel free to DM me on [Twitter](https://twitter.com/phraaaaaaa) or [Linkedin](https://www.linkedin.com/in/phraa/).
 As always, PRs and bug reports are welcome!
 
 [back](../)
