@@ -2,7 +2,7 @@
 layout: default
 ---
 
-_**Jul 13, 2020**_
+_**Oct 26, 2020**_
 
 # Announcing PEzor v2 — New Output Formats and Cobalt Strike Integration
 
