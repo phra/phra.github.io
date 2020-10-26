@@ -6,7 +6,7 @@ _**Oct 26, 2020**_
 
 # PEzor v2 — New Output Formats and Cobalt Strike Integration
 
-The `execute-assembly` capability of [Cobalt Strike](https://www.cobaltstrike.com/)'s beacon lets operators execute .NET assemblies without touching the disk and it deeply influenced the recent offensive developments by pushing the community to move towards .NET. But wouldn't be nice if we could [execute arbitary executables](https://iwantmore.pizza/posts/meterpreter-shellcode-inject.html) with the same ease? Let's find out how we can achieve that with [PEzor](https://iwantmore.pizza/posts/PEzor.html)!
+The `execute-assembly` capability of [Cobalt Strike](https://www.cobaltstrike.com/)'s beacon lets operators execute .NET assemblies without touching the disk and it deeply influenced the recent offensive developments by pushing the community to move towards .NET. But wouldn't be nice if we could [execute arbitary executables in-memory](https://iwantmore.pizza/posts/meterpreter-shellcode-inject.html) with the same ease? Let's find out how we can achieve that with [PEzor](https://iwantmore.pizza/posts/PEzor.html)!
 
 ![PEzor with Cobalt Strike](../assets/images/pezor-cobaltstrike.jpg "PEzor with Cobalt Strike")
 
@@ -26,7 +26,7 @@ Currently, PEzor supports the following new output formats, given an arbitrary e
 - **exe**: this is the only format that was supported by PEzor v1, that is a native binary
 - **dll**: PEzor can now convert existing executables to their DLL counterpart, without requiring to recompile from the sources
 - **service-exe**: it can produce a Service EXE version of the native binary, that exports required functions to be run as a system service
-- **service-dll**: it can produce a Service DLL version of the native binary, that exports required functions to be run inside a `dllhost` process
+- **service-dll**: it can produce a Service DLL version of the native binary, that exports required functions to be run inside a `dllhost` process (ref: [Running a Service DLL](https://blog.didierstevens.com/2019/10/29/quickpost-running-a-service-dll/))
 - **reflective-dll**: it can produce a reflective DLL version of the native binary, that can be loaded and executed in-memory by most of the frameworks, such as [Metasploit's reflective_dll_inject](https://github.com/rapid7/metasploit-framework/blob/master//modules/post/windows/manage/reflective_dll_inject.rb) module
 - **dotnet**: it can produce a .NET binary equivalent to the native one, that can be loaded and executed in-memory by most of the frameworks, such as [Metasploit's execute_dotnet_assembly](https://github.com/rapid7/metasploit-framework/blob/master/modules/post/windows/manage/execute_dotnet_assembly.rb) module
 
@@ -126,7 +126,7 @@ msf5 post(windows/manage/reflective_dll_inject) > run
 
 ## Cobalt Strike Integration
 
-Now we know how to generate different outputs and manually execute them, but how can we integrate this new tool within Cobalt Strike? To have a smooth _OX_ (operator experience), I wrote an [aggressor script](https://www.cobaltstrike.com/aggressor-script/index.html) that provide a transparent command similar to `execute-assembly` that can be invoked with the same command line options of PEzor: the script will automatically launch in background PEzor to convert the provided executable to the desired format (reflective-dll and dotnet) and task the beacon to inject the reflective DLL or execute in-memory the generated .NET assembly. The script can be found [here](https://github.com/phra/PEzor/blob/master/aggressor/PEzor.cna).
+Now we know how to generate different outputs and manually execute them, but how can we integrate this new tool within Cobalt Strike? To have a smooth _OX_ (operator experience), I wrote an [aggressor script](https://www.cobaltstrike.com/aggressor-script/index.html) that provide a transparent command similar to `execute-assembly` that can be invoked with the same command line options of PEzor: the script will automatically launch in background PEzor to convert the provided executable to the desired format (reflective-dll or dotnet) and task the beacon to inject the reflective DLL or execute in-memory the generated .NET assembly. The script can be found [here](https://github.com/phra/PEzor/blob/master/aggressor/PEzor.cna).
 
 ```
 # convert and execute reflective DLL
@@ -135,5 +135,7 @@ beacon> execute-inmemory -format=reflective-dll mimikatz.exe -z 2 -p '"coffee" "
 # convert and execute .NET assembly
 beacon> execute-inmemory -format=dotnet mimikatz.exe -z 2 -p '"coffee" "exit"'
 ```
+
+![PEzor with Cobalt Strike](../assets/images/pezor-cobaltstrike.jpg "PEzor with Cobalt Strike")
 
 [back](../)
