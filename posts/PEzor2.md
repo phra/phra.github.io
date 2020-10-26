@@ -136,6 +136,6 @@ beacon> execute-inmemory -format=reflective-dll mimikatz.exe -z 2 -p '"coffee" "
 beacon> execute-inmemory -format=dotnet mimikatz.exe -z 2 -p '"coffee" "exit"'
 ```
 
-![PEzor with Cobalt Strike](../assets/images/pezor-cobaltstrike.jpg "PEzor with Cobalt Strike")
+![PEzor with Cobalt Strike](../assets/images/pezor-cobaltstrike2.jpg "PEzor with Cobalt Strike")
 
 [back](../)
