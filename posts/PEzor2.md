@@ -6,7 +6,7 @@ _**Oct 26, 2020**_
 
 # PEzor v2 — New Output Formats and Cobalt Strike Integration
 
-The `execute-assembly` capability of [Cobalt Strike](https://www.cobaltstrike.com/)'s beacon lets operators execute .NET assemblies without touching the disk and it deeply influenced the recent offensive developments by pushing the community to move towards .NET. But wouldn't be nice if we could [execute arbitary executables in-memory](https://iwantmore.pizza/posts/meterpreter-shellcode-inject.html) with the same ease? Let's find out how we can achieve that with [PEzor](https://iwantmore.pizza/posts/PEzor.html)!
+The `execute-assembly` capability of [Cobalt Strike](https://www.cobaltstrike.com/)'s beacon lets operators execute .NET assemblies without touching the disk and it deeply influenced the recent offensive developments by pushing the community to move towards .NET. But wouldn't be nice if we could [execute arbitrary executables in-memory](https://iwantmore.pizza/posts/meterpreter-shellcode-inject.html) with the same ease? Let's find out how we can achieve that with [PEzor](https://iwantmore.pizza/posts/PEzor.html)!
 
 ![PEzor with Cobalt Strike](../assets/images/pezor-cobaltstrike.jpg "PEzor with Cobalt Strike")
 
