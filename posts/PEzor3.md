@@ -41,7 +41,7 @@ The framework is invoking the code associated with the hook by passing in two ar
     - `artifact64.x64.dll`
 - `$2` - the shellcode to be executed by the generated artifact
 
-Since we are integrating a fully featured shellcode loader that implements all the required output formats of the framework, we can entirely skip using the official [Artifact Kit](https://www.cobaltstrike.com/help-artifact-kit) by using our own templates. (_in this case the ones shipped with PEzor_)
+Since we are integrating a fully featured shellcode loader that implements all the required output formats of the framework, we can entirely skip using the official [Artifact Kit](https://www.cobaltstrike.com/help-artifact-kit) by employing our own templates. (_in this case the ones shipped with PEzor_)
 
 Here's the main source code of the hook:
 
