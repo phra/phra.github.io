@@ -13,7 +13,7 @@ Let's continue our journey with [Cobalt Strike](https://www.cobaltstrike.com/) a
 ## Motivation
 
 When implementing the `execute-inmemory` functionality, described in the [previous post](https://iwantmore.pizza/posts/PEzor2.html), I had to implement a custom [Sleep](http://sleep.dashnine.org/manual/) subroutine to convert the provided executable into a [Reflective DLL](https://github.com/stephenfewer/ReflectiveDLLInjection) or a .NET assembly.
-But wouldn't be nice if we can reuse a similar mechanism in order to build custom artifacts used by built-in and post-exploitation modules?
+But wouldn't it be nice if we can reuse a similar mechanism in order to build custom artifacts used by built-in and post-exploitation modules?
 
 ## Aggressor Scripts' Hooks
 
