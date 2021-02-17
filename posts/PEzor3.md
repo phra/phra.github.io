@@ -6,7 +6,7 @@ _**Feb 17, 2021**_
 
 # Generating Custom Cobalt Strike Artifacts with PEzor
 
-Let's continue our journey with [Cobalt Strike](https://www.cobaltstrike.com/) and [PEzor](https://github.com/phra/PEzor) by integrating it via [Aggressor Scripts' Hooks](https://www.cobaltstrike.com/aggressor-script/hooks.html) in order to generate custom artifacts that will be seamlessy used by the framework when generating payloads on the fly.
+Let's continue our journey with [Cobalt Strike](https://www.cobaltstrike.com/) and [PEzor](https://github.com/phra/PEzor) by integrating it via [Aggressor Scripts' Hooks](https://www.cobaltstrike.com/aggressor-script/hooks.html) in order to generate custom artifacts that will be seamlessly used by the framework when generating payloads on the fly.
 
 ![PEzor v2.1.0](../assets/images/pezor-v2.1.0.jpg "PEzor v2.1.0")
 
