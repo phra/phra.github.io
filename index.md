@@ -29,6 +29,7 @@ _References_
 
 # Posts
 
+- **Jul 08, 2021:** [Process Creation is Dead, Long Live Process Creation — Adding BOFs Support to PEzor](./posts/PEzor4.html)
 - **Feb 17, 2021:** [Generating Custom Cobalt Strike Artifacts with PEzor](./posts/PEzor3.html)
 - **Oct 26, 2020:** [PEzor v2 — New Output Formats and Cobalt Strike Integration](./posts/PEzor2.html)
 - **Jul 13, 2020:** [Designing and Implementing PEzor — an Open-Source Shellcode Injector and PE Packer](./posts/PEzor.html)
